@@ -1,7 +1,8 @@
 import tkinter as tk
+import new_tournament_creation_page
 
 
-class MainFrame(tk.Frame):
+class StartFrame(tk.Frame):
 
     def __init__(self, parent: tk.Tk):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
@@ -9,7 +10,10 @@ class MainFrame(tk.Frame):
         self.set_window()
         self.create_elements()
         self.pack(expand=1)
-        # Function for fixing the frame size - pack_propagate(False)
+
+    def create_parameters_frame(self):
+        [child.destroy() for child in self.parent.winfo_children()]
+        new_tournament_creation_page.ParametersFrame(parent=self.parent)
 
     def create_elements(self):
         frame_for_label = tk.Frame(self,
@@ -40,7 +44,8 @@ class MainFrame(tk.Frame):
                                           width=20,
                                           height=2,
                                           relief="solid",
-                                          activebackground="#FFFFFF"
+                                          activebackground="#FFFFFF",
+                                          command=self.create_parameters_frame
                                           )
         button_new_tournament.pack(side="left", padx=(90, 40), pady=(0, 30))
 
@@ -56,7 +61,6 @@ class MainFrame(tk.Frame):
         button_new_tournament.pack(side="right", padx=(40, 90), pady=(0, 30))
 
     def set_window(self):
-
         width = 1000
         height = 600
         self.parent.title("Турнирный менеджер")
@@ -73,7 +77,7 @@ class MainFrame(tk.Frame):
 
 def main():
     window = tk.Tk()
-    MainFrame(window)
+    StartFrame(window)
     window.mainloop()
 
 

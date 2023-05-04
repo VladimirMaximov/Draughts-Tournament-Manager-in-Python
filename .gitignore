@@ -1,2 +1,7 @@
 /venv
 /.idea
+/src/new_tournament_creation_page/__pycache__
+/src/participant_entry_page/__pycache__
+/src/start_page/__pycache__
+/src/tour_draw_page/__pycache__
+/src/tournament_and_results_table/__pycache__
