@@ -1,11 +1,11 @@
+import tournament_and_results_table as tart
 
 
 class Tournament:
 
-    def __init__(self, tournament_name, referee_name, assistant_referee_name,
-                 system, count_of_tours, count_of_parties,
-                 date, priority_1, priority_2, priority_3, priority_4):
-
+    def __init__(self, tournament_name="", referee_name="", assistant_referee_name="",
+                 system="", count_of_tours="", count_of_parties="",
+                 date="", priority_1="", priority_2="", priority_3="", priority_4=""):
         self.tournament_name = tournament_name
         self.referee_name = referee_name
         self.assistant_referee_name = assistant_referee_name
@@ -17,3 +17,11 @@ class Tournament:
         self.priority_2 = priority_2
         self.priority_3 = priority_3
         self.priority_4 = priority_4
+        self.current_tour = 1
+        self.players = []
+
+    def add_player(self, name):
+        self.players.append(tart.Player(name, 0, [], 0, 0, 0))
+
+    def add_players(self, players):
+        self.players = players
