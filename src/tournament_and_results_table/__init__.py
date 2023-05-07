@@ -1,1 +1,2 @@
-from .tournament import Tournament
+from .tournament import *
+from .player import *

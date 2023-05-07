@@ -1,17 +1,14 @@
 import tkinter as tk
 import new_tournament_creation_page as nt_page
-import tournament_and_results_table
+import tournament_and_results_table as tart
+import tour_draw_page as td_page
 
 
 class ParticipantsFrame(tk.Frame):
-    players = []
 
-    def __init__(self, parent: tk.Tk, tn: tournament_and_results_table.Tournament, players=None):
+    def __init__(self, parent: tk.Tk, tn: tart.Tournament):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
-        if players is None:
-            self.players = []
-        else:
-            self.players = players
+        self.players = tn.players
         self.parent = parent
         self.tn = tn
         self.create_elements()
@@ -19,7 +16,13 @@ class ParticipantsFrame(tk.Frame):
 
     def create_parameters_frame(self):
         [child.destroy() for child in self.parent.winfo_children()]
-        nt_page.ParametersFrame(parent=self.parent, tn=self.tn, players=self.players)
+        nt_page.ParametersFrame(parent=self.parent, tn=self.tn)
+
+    def create_tours_frame(self):
+        [child.destroy() for child in self.parent.winfo_children()]
+        if not self.tn.players:
+            self.tn.add_players(self.players)
+        td_page.ToursFrame(parent=self.parent, tn=self.tn)
 
     def create_elements(self):
         # fft - frame for text
@@ -62,21 +65,21 @@ class ParticipantsFrame(tk.Frame):
         def add_player(event=None):
             if entry1.get() != "":
                 new_player = entry1.get()
-                self.players.append(new_player)
-                players_var.set([f" {i + 1}. " + self.players[i] for i in range(len(self.players))])
+                self.players.append(tart.Player(new_player))
+                players_var.set([f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
                 entry1.delete(0, tk.END)
 
         def delete_player():
             selection = listbox.curselection()
             if len(selection) != 0:
                 self.players.pop(selection[0])
-                players_var.set([f" {i + 1}. " + self.players[i] for i in range(len(self.players))])
+                players_var.set([f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
                 listbox.selection_clear(0, tk.END)
             else:
                 player_to_remove = entry1.get()
-                if self.players.count(player_to_remove) != 0:
-                    self.players.remove(player_to_remove)
-                    players_var.set([f" {i + 1}. " + self.players[i] for i in range(len(self.players))])
+                if self.players.count(tart.Player(player_to_remove)) != 0:
+                    self.players.remove(tart.Player(player_to_remove))
+                    players_var.set([f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
                     entry1.delete(0, tk.END)
 
         def set_entry1(event):
@@ -97,7 +100,7 @@ class ParticipantsFrame(tk.Frame):
         entry1.grid(row=1, column=1, sticky="w", pady=5, padx=(5, 5))
         entry1.bind("<Return>", add_player)
 
-        players_var = tk.Variable(value=[f" {i + 1}. " + self.players[i] for i in range(len(self.players))])
+        players_var = tk.Variable(value=[f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
         listbox = tk.Listbox(ffp,
                              relief="solid",
                              border=2,
@@ -105,7 +108,7 @@ class ParticipantsFrame(tk.Frame):
                              selectbackground="#E8E8E8",
                              listvariable=players_var,
                              width=106,
-                             height=18)
+                             height=16)
         listbox.pack(anchor="sw", side="left", fill="both", padx=5, pady=5)
         listbox.bind("<<ListboxSelect>>", set_entry1)
 
@@ -154,6 +157,7 @@ class ParticipantsFrame(tk.Frame):
                                 width=20,
                                 height=2,
                                 relief="solid",
-                                activebackground="#FFFFFF"
+                                activebackground="#FFFFFF",
+                                command=self.create_tours_frame
                                 )
         button_next.grid(row=0, column=3, sticky="W", padx=(20, 5), pady=5)

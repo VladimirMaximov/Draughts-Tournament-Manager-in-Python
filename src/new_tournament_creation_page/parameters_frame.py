@@ -46,29 +46,48 @@ class MyCombobox(ttk.Combobox):
 
 
 class ParametersFrame(tk.Frame):
-    tournament_name = ""
-    referee_name = ""
-    assistant_referee_name = ""
-    date = ""
-    system = ""
-    count_of_tours = ""
-    count_of_parties = ""
-    priority_1 = ""
-    priority_2 = ""
-    priority_3 = ""
-    priority_4 = ""
 
-    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = None, players=None):
+    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = None):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
-        self.tn = tn
-        self.players = players
+        if tn is None:
+            self.tn = tournament.Tournament()
+        else:
+            self.tn = tn
+
+        self.tournament_name = tk.StringVar(value=self.tn.tournament_name)
+        self.referee_name = tk.StringVar(value=self.tn.referee_name)
+        self.assistant_referee_name = tk.StringVar(value=self.tn.assistant_referee_name)
+        self.date = tk.StringVar(value=self.tn.date)
+        self.system = tk.StringVar(value=self.tn.system)
+        self.count_of_tours = tk.StringVar(value=self.tn.count_of_tours)
+        self.count_of_parties = tk.StringVar(value=self.tn.count_of_parties)
+        self.priority_1 = tk.StringVar(value=self.tn.priority_1)
+        self.priority_2 = tk.StringVar(value=self.tn.priority_2)
+        self.priority_3 = tk.StringVar(value=self.tn.priority_3)
+        self.priority_4 = tk.StringVar(value=self.tn.priority_4)
+
         self.create_elements()
         self.pack(expand=1)
 
     def create_start_page(self):
         [child.destroy() for child in self.parent.winfo_children()]
         start_page.StartFrame(self.parent)
+
+    def create_participants_page(self):
+        [child.destroy() for child in self.parent.winfo_children()]
+        self.tn.tournament_name = self.tournament_name.get()
+        self.tn.referee_name = self.referee_name.get()
+        self.tn.assistant_referee_name = self.assistant_referee_name.get()
+        self.tn.date = self.date.get()
+        self.tn.system = self.system.get()
+        self.tn.count_of_tours = self.count_of_tours.get()
+        self.tn.count_of_parties = self.count_of_parties.get()
+        self.tn.priority_1 = self.priority_1.get()
+        self.tn.priority_2 = self.priority_2.get()
+        self.tn.priority_3 = self.priority_3.get()
+        self.tn.priority_4 = self.priority_4.get()
+        participant_entry_page.ParticipantsFrame(self.parent, self.tn)
 
     def create_elements(self):
         # ffif - frame for input fields
@@ -102,34 +121,27 @@ class ParametersFrame(tk.Frame):
         MyLabels(ffif, text="Дата проведения: ", row=7, column=0)
         MyLabels(ffif, text="Распределение мест при равенстве очков: ", row=8, column=0)
 
-        self.tournament_name = tk.StringVar()
         entry1 = MyEntry(ffif, textvariable=self.tournament_name)
         entry1.grid(row=1, column=1, sticky="W", pady=5, padx=(5, 0))
 
-        self.referee_name = tk.StringVar()
         entry2 = MyEntry(ffif, textvariable=self.referee_name)
         entry2.grid(row=2, column=1, sticky="W", pady=5, padx=(5, 0))
 
-        self.assistant_referee_name = tk.StringVar()
         entry3 = MyEntry(ffif, textvariable=self.assistant_referee_name)
         entry3.grid(row=3, column=1, sticky="W", pady=5, padx=(5, 0))
 
-        self.date = tk.StringVar()
         entry4 = MyEntry(ffif, textvariable=self.date)
         entry4.grid(row=7, column=1, sticky="W", pady=5, padx=(5, 0))
 
-        self.system = tk.StringVar()
         combobox1_values = ["Круговая система", "Швейцарская система", "Олимпийская система"]
         combobox1 = MyCombobox(ffif, textvariable=self.system, values=combobox1_values,
                                state="readonly")
         combobox1.grid(row=4, column=1, sticky="W", pady=5, padx=5)
 
-        self.count_of_tours = tk.StringVar()
         combobox2_values = [str(x) for x in range(1, 20)]
         combobox2 = MyCombobox(ffif, textvariable=self.count_of_tours, values=combobox2_values)
         combobox2.grid(row=5, column=1, sticky="W", pady=5, padx=5)
 
-        self.count_of_parties = tk.StringVar()
         combobox3_values = ["1", "2"]
         combobox3 = MyCombobox(ffif, textvariable=self.count_of_parties, values=combobox3_values)
         combobox3.grid(row=6, column=1, sticky="W", pady=5, padx=5)
@@ -141,34 +153,30 @@ class ParametersFrame(tk.Frame):
 
         prioritising = ["Дополнительный матч", "Результат личной встречи", "Наибольшее число побед",
                         "Система коэффициентов Шмульяна", "Система коэффициентов Бухгольца"]
-        self.priority_1 = tk.StringVar()
+
         combobox4 = MyCombobox(ffif, values=prioritising, textvariable=self.priority_1, width=53, state="readonly")
         combobox4.grid(row=8, column=1, sticky="W", pady=5, padx=(131, 0))
 
-        self.priority_2 = tk.StringVar()
         combobox5 = MyCombobox(ffif, values=prioritising, textvariable=self.priority_2, width=53, state="readonly")
         combobox5.grid(row=9, column=1, sticky="W", pady=5, padx=(131, 0))
 
-        self.priority_3 = tk.StringVar()
         combobox6 = MyCombobox(ffif, values=prioritising, textvariable=self.priority_3, width=53, state="readonly")
         combobox6.grid(row=10, column=1, sticky="W", pady=5, padx=(131, 0))
 
-        self.priority_4 = tk.StringVar()
         combobox7 = MyCombobox(ffif, values=prioritising, textvariable=self.priority_4, width=53, state="readonly")
         combobox7.grid(row=11, column=1, sticky="W", pady=5, padx=(131, 0))
 
-        if self.tn is not None:
-            entry1.insert(0, self.tn.tournament_name)
-            entry2.insert(0, self.tn.referee_name)
-            entry3.insert(0, self.tn.assistant_referee_name)
-            entry4.insert(0, self.tn.date)
-            combobox1.set(self.tn.system)
-            combobox2.set(self.tn.count_of_tours)
-            combobox3.set(self.tn.count_of_parties)
-            combobox4.set(self.tn.priority_1)
-            combobox5.set(self.tn.priority_2)
-            combobox6.set(self.tn.priority_3)
-            combobox7.set(self.tn.priority_4)
+        # entry1.insert(0, self.tournament_name)
+        # entry2.insert(0, self.referee_name)
+        # entry3.insert(0, self.assistant_referee_name)
+        # entry4.insert(0, self.date)
+        # combobox1.set(self.system)
+        # combobox2.set(self.count_of_tours)
+        # combobox3.set(self.count_of_parties)
+        # combobox4.set(self.priority_1)
+        # combobox5.set(self.priority_2)
+        # combobox6.set(self.priority_3)
+        # combobox7.set(self.priority_4)
 
         button_back = tk.Button(ffb, text="Назад",
                                 font=("Times New Roman", 14),
@@ -191,13 +199,3 @@ class ParametersFrame(tk.Frame):
                                 command=self.create_participants_page
                                 )
         button_next.grid(row=0, column=1, sticky="W", padx=(560, 5), pady=5)
-
-    def create_participants_page(self):
-        tn = tournament.Tournament(self.tournament_name.get(), self.referee_name.get(),
-                                   self.assistant_referee_name.get(), self.system.get(),
-                                   self.count_of_tours.get(), self.count_of_parties.get(),
-                                   self.date.get(), self.priority_1.get(), self.priority_2.get(),
-                                   self.priority_3.get(), self.priority_4.get())
-
-        [child.destroy() for child in self.parent.winfo_children()]
-        participant_entry_page.ParticipantsFrame(self.parent, tn, self.players)
