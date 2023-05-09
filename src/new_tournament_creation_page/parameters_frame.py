@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import start_page
 import tournament_and_results_table as tournament
 import participant_entry_page
@@ -70,12 +70,21 @@ class ParametersFrame(tk.Frame):
         self.create_elements()
         self.pack(expand=1)
 
+    def check_mistakes(self):
+        if not self.tn.count_of_tours.isdigit():
+            messagebox.showerror(title="Ошибка", message="Введите корректное количество туров")
+            return True
+
+        if not self.tn.count_of_parties.isdigit():
+            messagebox.showerror(title="Ошибка", message="Введите корректное количество партий")
+            return True
+
     def create_start_page(self):
         [child.destroy() for child in self.parent.winfo_children()]
         start_page.StartFrame(self.parent)
 
     def create_participants_page(self):
-        [child.destroy() for child in self.parent.winfo_children()]
+
         self.tn.tournament_name = self.tournament_name.get()
         self.tn.referee_name = self.referee_name.get()
         self.tn.assistant_referee_name = self.assistant_referee_name.get()
@@ -87,6 +96,14 @@ class ParametersFrame(tk.Frame):
         self.tn.priority_2 = self.priority_2.get()
         self.tn.priority_3 = self.priority_3.get()
         self.tn.priority_4 = self.priority_4.get()
+
+        if self.check_mistakes():
+            return
+
+        self.tn.count_of_tours = int(self.tn.count_of_tours)
+        self.tn.count_of_parties = int(self.tn.count_of_parties)
+
+        [child.destroy() for child in self.parent.winfo_children()]
         participant_entry_page.ParticipantsFrame(self.parent, self.tn)
 
     def create_elements(self):

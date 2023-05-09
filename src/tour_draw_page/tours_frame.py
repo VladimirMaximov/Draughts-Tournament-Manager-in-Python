@@ -31,11 +31,18 @@ class ToursFrame(tk.Frame):
             white_player.list_of_opponents.append((black_player, int(white_player_result.get())))
             black_player.list_of_opponents.append((white_player, int(black_player_result.get())))
 
+        if self.tn.current_tour > self.tn.count_of_tours:
+            return
         [child.destroy() for child in self.parent.winfo_children()]
         ToursFrame(self.parent, self.tn)
 
+    def table(self):
+        window = tk.Tk()
+        tart.TableFrame(window, self.tn)
+        window.mainloop()
+
     # width=950, height=400
-    def create_pairs(self, frame: tk.Canvas):
+    def create_pairs(self, canvas: tk.Canvas):
         pairs_of_players = list(self.tn.draw().items())
         results = []
         label1 = tk.Label(text="№ стола", font=("Times New Roman", 14), background="#FFFFFF", width=8, anchor="center")
@@ -45,10 +52,10 @@ class ToursFrame(tk.Frame):
                           anchor="center")
         label4 = tk.Label(text="ФИО участника", font=("Times New Roman", 14), background="#FFFFFF", width=14,
                           anchor="center")
-        frame.create_window(60, 30, window=label1)
-        frame.create_window(280, 30, window=label2)
-        frame.create_window(520, 30, window=label3)
-        frame.create_window(760, 30, window=label4)
+        canvas.create_window(60, 30, window=label1)
+        canvas.create_window(280, 30, window=label2)
+        canvas.create_window(520, 30, window=label3)
+        canvas.create_window(760, 30, window=label4)
 
         for i in range(2, len(pairs_of_players) + 2):
             # Задаём номер стола
@@ -78,11 +85,11 @@ class ToursFrame(tk.Frame):
                                    width=20,
                                    anchor="center")
 
-            frame.create_window(60, i * 30, window=number_of_table)
-            frame.create_window(280, i * 30, window=white_color)
-            frame.create_window(500, i * 30, window=white_result)
-            frame.create_window(540, i * 30, window=black_result)
-            frame.create_window(760, i * 30, window=black_color)
+            canvas.create_window(60, i * 30, window=number_of_table)
+            canvas.create_window(280, i * 30, window=white_color)
+            canvas.create_window(500, i * 30, window=white_result)
+            canvas.create_window(540, i * 30, window=black_result)
+            canvas.create_window(760, i * 30, window=black_color)
 
         return results
 
@@ -156,7 +163,8 @@ class ToursFrame(tk.Frame):
                                width=20,
                                height=2,
                                relief="solid",
-                               activebackground="#FFFFFF"
+                               activebackground="#FFFFFF",
+                               command=self.table
                                )
         button_add.grid(row=0, column=2, sticky="W", padx=25, pady=(10, 0))
 
