@@ -2,6 +2,7 @@ import tkinter as tk
 import new_tournament_creation_page as nt_page
 import tournament_and_results_table as tart
 import tour_draw_page as td_page
+from tkinter import messagebox
 
 
 class ParticipantsFrame(tk.Frame):
@@ -19,9 +20,14 @@ class ParticipantsFrame(tk.Frame):
         nt_page.ParametersFrame(parent=self.parent, tn=self.tn)
 
     def create_tours_frame(self):
+        if len(self.tn.players) == 0:
+            messagebox.showerror(title="Ошибка", message="Вы не добавили ни одного игрока")
+            return
+
         [child.destroy() for child in self.parent.winfo_children()]
         if not self.tn.players:
             self.tn.add_players(self.players)
+
         td_page.ToursFrame(parent=self.parent, tn=self.tn)
 
     def create_elements(self):
@@ -125,7 +131,7 @@ class ParticipantsFrame(tk.Frame):
                                 activebackground="#FFFFFF",
                                 command=self.create_parameters_frame
                                 )
-        button_back.grid(row=0, column=0, sticky="W", padx=(5, 25), pady=5)
+        button_back.grid(row=0, column=0, sticky="W", padx=(5, 25), pady=(10, 0))
 
         button_delete = tk.Button(ffb,
                                   text="Удалить",
@@ -137,7 +143,7 @@ class ParticipantsFrame(tk.Frame):
                                   activebackground="#FFFFFF",
                                   command=delete_player
                                   )
-        button_delete.grid(row=0, column=1, sticky="W", padx=25, pady=5)
+        button_delete.grid(row=0, column=1, sticky="W", padx=25, pady=(10, 0))
 
         button_add = tk.Button(ffb,
                                text="Добавить",
@@ -149,7 +155,7 @@ class ParticipantsFrame(tk.Frame):
                                activebackground="#FFFFFF",
                                command=add_player
                                )
-        button_add.grid(row=0, column=2, sticky="W", padx=25, pady=5)
+        button_add.grid(row=0, column=2, sticky="W", padx=25, pady=(10, 0))
 
         button_next = tk.Button(ffb, text="Далее",
                                 font=("Times New Roman", 14),
@@ -160,4 +166,4 @@ class ParticipantsFrame(tk.Frame):
                                 activebackground="#FFFFFF",
                                 command=self.create_tours_frame
                                 )
-        button_next.grid(row=0, column=3, sticky="W", padx=(20, 5), pady=5)
+        button_next.grid(row=0, column=3, sticky="W", padx=(20, 5), pady=(10, 0))

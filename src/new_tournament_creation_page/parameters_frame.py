@@ -166,18 +166,6 @@ class ParametersFrame(tk.Frame):
         combobox7 = MyCombobox(ffif, values=prioritising, textvariable=self.priority_4, width=53, state="readonly")
         combobox7.grid(row=11, column=1, sticky="W", pady=5, padx=(131, 0))
 
-        # entry1.insert(0, self.tournament_name)
-        # entry2.insert(0, self.referee_name)
-        # entry3.insert(0, self.assistant_referee_name)
-        # entry4.insert(0, self.date)
-        # combobox1.set(self.system)
-        # combobox2.set(self.count_of_tours)
-        # combobox3.set(self.count_of_parties)
-        # combobox4.set(self.priority_1)
-        # combobox5.set(self.priority_2)
-        # combobox6.set(self.priority_3)
-        # combobox7.set(self.priority_4)
-
         button_back = tk.Button(ffb, text="Назад",
                                 font=("Times New Roman", 14),
                                 background="#FFFFFF",
@@ -187,7 +175,7 @@ class ParametersFrame(tk.Frame):
                                 activebackground="#FFFFFF",
                                 command=self.create_start_page
                                 )
-        button_back.grid(row=0, column=0, sticky="W", padx=5, pady=5)
+        button_back.grid(row=0, column=0, sticky="W", padx=5, pady=(10, 0))
 
         button_next = tk.Button(ffb, text="Далее",
                                 font=("Times New Roman", 14),
@@ -198,4 +186,4 @@ class ParametersFrame(tk.Frame):
                                 activebackground="#FFFFFF",
                                 command=self.create_participants_page
                                 )
-        button_next.grid(row=0, column=1, sticky="W", padx=(560, 5), pady=5)
+        button_next.grid(row=0, column=1, sticky="W", padx=(560, 10), pady=(10, 0))
