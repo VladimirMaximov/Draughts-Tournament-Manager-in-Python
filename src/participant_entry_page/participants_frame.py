@@ -7,8 +7,9 @@ from tkinter import messagebox
 
 class ParticipantsFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: tart.Tournament):
+    def __init__(self, parent: tk.Tk, tn: tart.Tournament, from_settings=False):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
+        self.from_settings = from_settings
         self.players = tn.players
         self.parent = parent
         self.tn = tn
@@ -17,7 +18,7 @@ class ParticipantsFrame(tk.Frame):
 
     def create_parameters_frame(self):
         [child.destroy() for child in self.parent.winfo_children()]
-        nt_page.ParametersFrame(parent=self.parent, tn=self.tn)
+        nt_page.ParametersFrame(parent=self.parent, tn=self.tn, from_settings=self.from_settings)
 
     def create_tours_frame(self):
         if len(self.tn.players) == 0:
@@ -157,13 +158,19 @@ class ParticipantsFrame(tk.Frame):
                                )
         button_add.grid(row=0, column=2, sticky="W", padx=25, pady=(10, 0))
 
-        button_next = tk.Button(ffb, text="Далее",
+        if self.from_settings:
+            text = "Сохранить"
+            command = None
+        else:
+            text = "Далее"
+            command = self.create_tours_frame
+        button_next = tk.Button(ffb, text=text,
                                 font=("Times New Roman", 14),
                                 background="#FFFFFF",
                                 width=20,
                                 height=2,
                                 relief="solid",
                                 activebackground="#FFFFFF",
-                                command=self.create_tours_frame
+                                command=command
                                 )
         button_next.grid(row=0, column=3, sticky="W", padx=(20, 5), pady=(10, 0))

@@ -1,15 +1,19 @@
 import tkinter as tk
+from tkinter import messagebox as mb
+import copy
+
+import new_tournament_creation_page
 import tournament_and_results_table as tart
 import participant_entry_page as pep
 
 
 class ToursFrame(tk.Frame):
-    players = []
 
-    def __init__(self, parent: tk.Tk, tn: tart.Tournament):
+    def __init__(self, parent: tk.Tk, tn: tart.Tournament, go_back: bool = False):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
         self.tn = tn
+        self.go_back = go_back
         self.create_elements()
         self.pack(expand=1)
 
@@ -17,22 +21,56 @@ class ToursFrame(tk.Frame):
         if self.tn.current_tour == 1:
             [child.destroy() for child in self.parent.winfo_children()]
             pep.ParticipantsFrame(parent=self.parent, tn=self.tn)
+        else:
+            [child.destroy() for child in self.parent.winfo_children()]
+            self.tn.current_tour -= 1
+            ToursFrame(parent=self.parent, tn=self.tn, go_back=True)
+
+    @staticmethod
+    def check_errors(results):
+        for white_player, white_player_result, black_player_result, black_player in results:
+            if white_player_result.get().isdigit() and black_player_result.get().isdigit():
+                if int(white_player_result.get()) + int(black_player_result.get()) != 2:
+                    mb.showerror(title="Ошибка",
+                                 message=f"Проверьте результаты, возможные исходы партии:\n 2 : 0, 1 : 1, 0 : 2")
+                    return True
+            else:
+                mb.showerror(title="Ошибка",
+                             message="Проверьте результаты, возможные исходы партии:\n 2 : 0, 1 : 1, 0 : 2")
+                return True
+        return False
 
     def next_tour(self, results):
-        self.tn.current_tour += 1
-        dict_results = {}
-        for white_player, white_player_result, black_player_result, black_player in results:
-            dict_results[white_player] = int(white_player_result.get())
-            dict_results[black_player] = int(black_player_result.get())
-
-            white_player.number_of_points += int(white_player_result.get())
-            black_player.number_of_points += int(black_player_result.get())
-
-            white_player.list_of_opponents.append((black_player, int(white_player_result.get())))
-            black_player.list_of_opponents.append((white_player, int(black_player_result.get())))
-
-        if self.tn.current_tour > self.tn.count_of_tours:
+        # Проверяем результат на ошибки
+        if self.check_errors(results):
             return
+
+        for white_player, white_player_result, black_player_result, black_player in results:
+
+            # Так как мы можем много раз вызывать итоговую таблицу,
+            # то обновления информации об игроках может выполняться
+            # несколько раз, поэтому требуется делать проверку
+            if white_player.list_of_opponents.count((black_player, int(white_player_result.get()))) == 0:
+                white_player.number_of_points += int(white_player_result.get())
+                black_player.number_of_points += int(black_player_result.get())
+                if int(white_player_result.get()) == 2:
+                    white_player.number_of_wins += 1
+                if int(black_player_result.get()) == 2:
+                    black_player.number_of_wins += 1
+
+                white_player.list_of_opponents.append((black_player, int(white_player_result.get()), "w"))
+                black_player.list_of_opponents.append((white_player, int(black_player_result.get()), "b"))
+
+        # Если это был последний тур, то вместо
+        # жеребьевки следующего тура выдаем таблицу
+        self.tn.current_tour += 1
+        if self.tn.current_tour > self.tn.count_of_tours:
+            self.tn.current_tour -= 1
+            window = tk.Tk()
+            tart.TableFrame(window, self.tn)
+            window.mainloop()
+            return
+
         [child.destroy() for child in self.parent.winfo_children()]
         ToursFrame(self.parent, self.tn)
 
@@ -41,9 +79,56 @@ class ToursFrame(tk.Frame):
         tart.TableFrame(window, self.tn)
         window.mainloop()
 
+    def change_settings(self):
+        window1 = tk.Tk()
+        tn = copy.deepcopy(self.tn)
+        new_tournament_creation_page.ParametersFrame(parent=window1, tn=tn, from_settings=True)
+        window1.mainloop()
+
     # width=950, height=400
     def create_pairs(self, canvas: tk.Canvas):
-        pairs_of_players = list(self.tn.draw().items())
+        # Пары игроков представлены списком кортежей их двух элементов,
+        # где первый элемент - игрок белым цветом, второй элемент - игрок черным цветом.
+        # Дополнительно может быть третий и четвертый элемент - результат белых и черных
+        # соответственно, это необходимо, чтобы изначально
+        # задать объекты entry при "возвращении назад"
+        pairs_of_players = []
+        if not self.go_back:
+            pairs_of_players = list(self.tn.draw().items())
+        else:
+            # Если мы вернулись назад, то первым делом мы должны
+            # для каждого игрока изменить его количество очков и
+            # количество побед, но пока не удалять последнего противника,
+            # так как он нам пригодится для составления списка пар
+            for player in self.tn.players:
+                last_opponent = player.list_of_opponents[-1]
+                player.number_of_points -= last_opponent[1]
+                if last_opponent[1] == 2:
+                    player.number_of_wins -= 1
+            # Сортируем игроков так, чтобы результат получился такой же,
+            # как и был на предыдущем туре, так как количество очков и
+            # побед мы уже уменьшили, то осталось только посчитать правильно
+            # коэффициенты, без участия последнего игрока (так как мы
+            # его ещё не удалили из списка оппонентов)
+            self.tn.sort_players(self.go_back)
+            for player in self.tn.players:
+                if len(player.list_of_opponents) == self.tn.current_tour:
+                    # В данном случае:
+                    # opponent[0] - текущий оппонент игрока,
+                    # opponent[1] - результат с этим оппонентом,
+                    # opponent[2] - цвет, которым играл текущий игрок (а не его оппонент)
+                    opponent = player.list_of_opponents.pop()
+                    player_with_res = opponent[0].list_of_opponents.pop()
+                    if opponent[2] == "w":
+                        pairs_of_players.append((player_with_res[0], opponent[0], opponent[1], player_with_res[1]))
+                    else:
+                        pairs_of_players.append((opponent[0], player_with_res[0], player_with_res[1], opponent[1]))
+        # Результат представлен списком кортежей,
+        # состоящих из 4 элементов:
+        # [Игрок белым цветом;
+        # объект entry, хранящий результат белых;
+        # объект entry, хранящий результат черных;
+        # игрок черным цветом]
         results = []
         label1 = tk.Label(text="№ стола", font=("Times New Roman", 14), background="#FFFFFF", width=8, anchor="center")
         label2 = tk.Label(text="ФИО участника", font=("Times New Roman", 14), background="#FFFFFF", width=14,
@@ -57,12 +142,12 @@ class ToursFrame(tk.Frame):
         canvas.create_window(520, 30, window=label3)
         canvas.create_window(760, 30, window=label4)
 
-        for i in range(2, len(pairs_of_players) + 2):
+        for i in range(len(pairs_of_players)):
             # Задаём номер стола
-            number_of_table = tk.Label(text=f"{i - 1}.", font=("Times New Roman", 14), background="#FFFFFF", width=8,
+            number_of_table = tk.Label(text=f"{i + 1}.", font=("Times New Roman", 14), background="#FFFFFF", width=8,
                                        anchor="center")
             # ФИО игрока белым цветом
-            white_color = tk.Label(text=f"{pairs_of_players[i - 2][0].name}", font=("Times New Roman", 14),
+            white_color = tk.Label(text=f"{pairs_of_players[i][0].name}", font=("Times New Roman", 14),
                                    background="#FFFFFF",
                                    width=20,
                                    anchor="center")
@@ -75,21 +160,26 @@ class ToursFrame(tk.Frame):
             black_result_var = tk.StringVar()
             black_result = tk.Entry(font=("Times New Roman", 14), background="#E8E8E8", relief="flat", width=3,
                                     textvariable=black_result_var)
+            # Если мы вернулись, то задаём
+            # результат белых и черных
+            if self.go_back:
+                white_result.insert(0, pairs_of_players[i][2])
+                black_result.insert(0, pairs_of_players[i][3])
             # добавляем в результативный список подсписок следующего вида:
             # [игрок белыми, виджет для результата белых, виджет для результата черных, игрок черными]
-            results.append((pairs_of_players[i - 2][0], white_result, black_result, pairs_of_players[i - 2][1]))
+            results.append((pairs_of_players[i][0], white_result, black_result, pairs_of_players[i][1]))
 
             # ФИО игрока черным цветом
-            black_color = tk.Label(text=f"{pairs_of_players[i - 2][1].name}", font=("Times New Roman", 14),
+            black_color = tk.Label(text=f"{pairs_of_players[i][1].name}", font=("Times New Roman", 14),
                                    background="#FFFFFF",
                                    width=20,
                                    anchor="center")
 
-            canvas.create_window(60, i * 30, window=number_of_table)
-            canvas.create_window(280, i * 30, window=white_color)
-            canvas.create_window(500, i * 30, window=white_result)
-            canvas.create_window(540, i * 30, window=black_result)
-            canvas.create_window(760, i * 30, window=black_color)
+            canvas.create_window(60, (i + 2) * 30, window=number_of_table)
+            canvas.create_window(280, (i + 2) * 30, window=white_color)
+            canvas.create_window(500, (i + 2) * 30, window=white_result)
+            canvas.create_window(540, (i + 2) * 30, window=black_result)
+            canvas.create_window(760, (i + 2) * 30, window=black_color)
 
         return results
 
@@ -152,7 +242,8 @@ class ToursFrame(tk.Frame):
                                   width=20,
                                   height=2,
                                   relief="solid",
-                                  activebackground="#FFFFFF"
+                                  activebackground="#FFFFFF",
+                                  command=self.change_settings
                                   )
         button_delete.grid(row=0, column=1, sticky="W", padx=25, pady=(10, 0))
 
@@ -168,7 +259,11 @@ class ToursFrame(tk.Frame):
                                )
         button_add.grid(row=0, column=2, sticky="W", padx=25, pady=(10, 0))
 
-        button_next = tk.Button(ffb, text="Далее",
+        text = f"Жеребьевка тура №{self.tn.current_tour + 1}"
+        if self.tn.current_tour == self.tn.count_of_tours:
+            text = "Итоговая таблица"
+
+        button_next = tk.Button(ffb, text=text,
                                 font=("Times New Roman", 14),
                                 background="#FFFFFF",
                                 width=20,

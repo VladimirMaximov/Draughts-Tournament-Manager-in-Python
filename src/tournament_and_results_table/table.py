@@ -53,8 +53,10 @@ class TableFrame(tk.Frame):
                 pr_1 = self.tn.players[i].number_of_wins
             elif self.tn.priority_1 == "Система коэффициентов Шмульяна":
                 pr_1 = self.tn.players[i].schmullan_coefficient
-            else:
+            elif self.tn.priority_1 == "Система коэффициентов Бухгольца":
                 pr_1 = self.tn.players[i].buchholz_coefficient
+            else:
+                pr_1 = "Б. п."
             label2 = tk.Label(canvas_frame, text=f"{pr_1}", font=("Times New Roman", 14), background="#FFFFFF", width=5,
                               anchor="center")
             if self.tn.priority_2 == "Дополнительный матч":
@@ -65,8 +67,10 @@ class TableFrame(tk.Frame):
                 pr_1 = self.tn.players[i].number_of_wins
             elif self.tn.priority_2 == "Система коэффициентов Шмульяна":
                 pr_1 = self.tn.players[i].schmullan_coefficient
-            else:
+            elif self.tn.priority_2 == "Система коэффициентов Бухгольца":
                 pr_1 = self.tn.players[i].buchholz_coefficient
+            else:
+                pr_1 = "Б. п."
             label3 = tk.Label(canvas_frame, text=f"{pr_1}", font=("Times New Roman", 14), background="#FFFFFF", width=5,
                               anchor="center")
             if self.tn.priority_3 == "Дополнительный матч":
@@ -77,8 +81,10 @@ class TableFrame(tk.Frame):
                 pr_1 = self.tn.players[i].number_of_wins
             elif self.tn.priority_3 == "Система коэффициентов Шмульяна":
                 pr_1 = self.tn.players[i].schmullan_coefficient
-            else:
+            elif self.tn.priority_3 == "Система коэффициентов Бухгольца":
                 pr_1 = self.tn.players[i].buchholz_coefficient
+            else:
+                pr_1 = "Б. п."
             label4 = tk.Label(canvas_frame, text=f"{pr_1}", font=("Times New Roman", 14), background="#FFFFFF", width=5,
                               anchor="center")
             if self.tn.priority_4 == "Дополнительный матч":
@@ -89,8 +95,10 @@ class TableFrame(tk.Frame):
                 pr_1 = self.tn.players[i].number_of_wins
             elif self.tn.priority_4 == "Система коэффициентов Шмульяна":
                 pr_1 = self.tn.players[i].schmullan_coefficient
-            else:
+            elif self.tn.priority_4 == "Система коэффициентов Бухгольца":
                 pr_1 = self.tn.players[i].buchholz_coefficient
+            else:
+                pr_1 = "Б. п."
             label5 = tk.Label(canvas_frame, text=f"{pr_1}", font=("Times New Roman", 14), background="#FFFFFF", width=5,
                               anchor="center")
             label6 = tk.Label(canvas_frame, text=f"{self.tn.players[i].number_of_points}", font=("Times New Roman", 14), background="#FFFFFF",
@@ -123,7 +131,11 @@ class TableFrame(tk.Frame):
                         )
         fftt.pack(expand=1, fill="both")
 
-        label0 = tk.Label(fft, text=f"Турнирная таблица на {self.tn.current_tour} тур.",
+        if self.tn.current_tour - 1 == 0:
+            text = "Таблица участников"
+        else:
+            text = f"Турнирная таблица на {self.tn.current_tour - 1} тур."
+        label0 = tk.Label(fft, text=text,
                           font=("Times New Roman", 36),
                           background="#FFFFFF",
                           width=36)

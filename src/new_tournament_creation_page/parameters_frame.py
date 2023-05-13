@@ -47,14 +47,13 @@ class MyCombobox(ttk.Combobox):
 
 class ParametersFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = None):
+    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = None, from_settings=False):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
         if tn is None:
             self.tn = tournament.Tournament()
         else:
             self.tn = tn
-
         self.tournament_name = tk.StringVar(value=self.tn.tournament_name)
         self.referee_name = tk.StringVar(value=self.tn.referee_name)
         self.assistant_referee_name = tk.StringVar(value=self.tn.assistant_referee_name)
@@ -67,6 +66,9 @@ class ParametersFrame(tk.Frame):
         self.priority_3 = tk.StringVar(value=self.tn.priority_3)
         self.priority_4 = tk.StringVar(value=self.tn.priority_4)
 
+        self.from_settings = from_settings
+        if from_settings:
+            self.set_window()
         self.create_elements()
         self.pack(expand=1)
 
@@ -104,11 +106,11 @@ class ParametersFrame(tk.Frame):
         self.tn.count_of_parties = int(self.tn.count_of_parties)
 
         [child.destroy() for child in self.parent.winfo_children()]
-        participant_entry_page.ParticipantsFrame(self.parent, self.tn)
+        participant_entry_page.ParticipantsFrame(self.parent, self.tn, self.from_settings)
 
     def create_elements(self):
         # ffif - frame for input fields
-        ffif = tk.Frame(self,
+        ffif = tk.Frame(self.parent,
                         background="#FFFFFF",
                         width=1000,
                         height=500
@@ -183,24 +185,60 @@ class ParametersFrame(tk.Frame):
         combobox7 = MyCombobox(ffif, values=prioritising, textvariable=self.priority_4, width=53, state="readonly")
         combobox7.grid(row=11, column=1, sticky="W", pady=5, padx=(131, 0))
 
-        button_back = tk.Button(ffb, text="Назад",
-                                font=("Times New Roman", 14),
-                                background="#FFFFFF",
-                                width=20,
-                                height=2,
-                                relief="solid",
-                                activebackground="#FFFFFF",
-                                command=self.create_start_page
-                                )
-        button_back.grid(row=0, column=0, sticky="W", padx=5, pady=(10, 0))
+        # if self.from_settings:
+        #     entry1.insert(0, self.tournament_name.get())
+        #     entry2.insert(0, self.referee_name.get())
+        #     entry3.insert(0, self.assistant_referee_name.get())
+        #     entry4.insert(0, self.date.get())
+        #     combobox1.set(self.system.get())
+        #     combobox2.set(self.count_of_tours.get())
+        #     combobox3.set(self.count_of_parties.get())
+        #     combobox4.set(self.priority_1.get())
+        #     combobox5.set(self.priority_2.get())
+        #     combobox6.set(self.priority_3.get())
+        #     combobox7.set(self.priority_4.get())
 
-        button_next = tk.Button(ffb, text="Далее",
+        if not self.from_settings:
+            button_back = tk.Button(ffb, text="Назад",
+                                    font=("Times New Roman", 14),
+                                    background="#FFFFFF",
+                                    width=20,
+                                    height=2,
+                                    relief="solid",
+                                    activebackground="#FFFFFF",
+                                    command=self.create_start_page
+                                    )
+            button_back.grid(row=0, column=0, sticky="W", padx=5, pady=(10, 0))
+
+        if self.from_settings:
+            text = "Добавить/удалить участника"
+            width = 26
+            padx = (720, 10)
+        else:
+            text = "Далее"
+            width = 20
+            padx = (560, 10)
+        button_next = tk.Button(ffb, text=text,
                                 font=("Times New Roman", 14),
                                 background="#FFFFFF",
-                                width=20,
+                                width=width,
                                 height=2,
                                 relief="solid",
                                 activebackground="#FFFFFF",
                                 command=self.create_participants_page
                                 )
-        button_next.grid(row=0, column=1, sticky="W", padx=(560, 10), pady=(10, 0))
+        button_next.grid(row=0, column=1, sticky="W", padx=padx, pady=(10, 0))
+
+    def set_window(self):
+        width = 1000
+        height = 600
+        self.parent.title("Настройки")
+        self.parent.configure(background="#FFFFFF")
+
+        screen_width = self.parent.winfo_screenwidth()
+        screen_height = self.parent.winfo_screenheight()
+
+        x = (screen_width - width) / 2
+        y = (screen_height - height) / 2
+
+        self.parent.geometry(f"{width}x{height}+{int(x)}+{int(y)}")
