@@ -8,12 +8,13 @@ from tkcalendar import Calendar, DateEntry
 
 
 class MyLabels(tk.Label):
-    def __init__(self, frame, text, *args, **kwargs):
+    def __init__(self, frame, text, *args, font=("Times New Roman", 14), **kwargs):
         tk.Label.__init__(self,
                           frame,
                           text=text,
-                          font=("Times New Roman", 14),
+                          font=font,
                           background="#FFFFFF",
+                          width=32,
                           *args, **kwargs
                           )
 
@@ -33,9 +34,10 @@ class MyButton(tk.Button):
     def __init__(self, frame, *args, **kwargs):
         tk.Button.__init__(self,
                            frame,
-                           font=("Times New Roman", 14),
+                           font=("Times New Roman", 10),
                            background="#FFFFFF",
                            relief="solid",
+                           width=88,
                            height=1,
                            activebackground="#E8E8E8",
                            *args, **kwargs)
@@ -87,7 +89,7 @@ class ParametersFrame(tk.Frame):
         frame_for_title = tk.Frame(self.parent)
         frame_for_title.pack()
 
-        label_title = MyLabels(frame_for_title, text="Параметры турнира")
+        label_title = MyLabels(frame_for_title, text="Параметры турнира", font=("Times New Roman", 32))
         label_title.pack()
 
         # Фрейм для ввода всех настроек
@@ -96,7 +98,7 @@ class ParametersFrame(tk.Frame):
 
         # Фрейм для названия турнира
         frame_for_tn_name = tk.Frame(frame_for_settings)
-        frame_for_tn_name.pack()
+        frame_for_tn_name.pack(fill="x")
 
         label_tn_name = MyLabels(frame_for_tn_name, text="Название турнира:")
         label_tn_name.pack(side="left")
@@ -106,17 +108,17 @@ class ParametersFrame(tk.Frame):
 
         # Фрейм для пути
         frame_for_path = tk.Frame(frame_for_settings)
-        frame_for_path.pack()
+        frame_for_path.pack(fill="x")
 
         label_path = MyLabels(frame_for_path, text="Папка для сохранения турнира:")
         label_path.pack(side="left")
 
-        button_select_path = MyButton(frame_for_path, text="Выбрать папку для сохранения")
+        button_select_path = MyButton(frame_for_path, text="Выбрать папку для сохранения", border=1)
         button_select_path.pack(side="left")
 
         # Фрейм для ФИО судьи
         frame_for_referee_name = tk.Frame(frame_for_settings)
-        frame_for_referee_name.pack()
+        frame_for_referee_name.pack(fill="x")
 
         label_referee_name = MyLabels(frame_for_referee_name, text="ФИО судьи:")
         label_referee_name.pack(side="left")
@@ -126,7 +128,7 @@ class ParametersFrame(tk.Frame):
 
         # Фрейм для ФИО помощника судьи
         frame_for_assistant_referee_name = tk.Frame(frame_for_settings)
-        frame_for_assistant_referee_name.pack()
+        frame_for_assistant_referee_name.pack(fill="x")
 
         label_assistant_referee_name = MyLabels(frame_for_assistant_referee_name, text="ФИО помощника судьи:")
         label_assistant_referee_name.pack(side="left")
@@ -136,19 +138,19 @@ class ParametersFrame(tk.Frame):
 
         # Фрейм для системы проведения турнира
         frame_for_system = tk.Frame(frame_for_settings)
-        frame_for_system.pack()
+        frame_for_system.pack(fill="x")
 
         label_system = MyLabels(frame_for_system, text="Система проведения соревнований:")
         label_system.pack(side="left")
 
         system = ["Швейцарская система", "Олимпийская система", "Круговая система"]
-        field = tk.StringVar()
-        entry_system = MyCombobox(frame_for_system, values=system, textvariable=field)
-        entry_system.pack(side="left")
+        field_system = tk.StringVar()
+        combobox_system = MyCombobox(frame_for_system, values=system, textvariable=field_system)
+        combobox_system.pack(side="left")
 
         # Фрейм для поля количества туров
         frame_for_count_of_tours = tk.Frame(frame_for_settings)
-        frame_for_count_of_tours.pack()
+        frame_for_count_of_tours.pack(fill="x")
 
         label_count_of_tours = MyLabels(frame_for_count_of_tours, text="Количество туров:")
         label_count_of_tours.pack(side="left")
@@ -158,22 +160,30 @@ class ParametersFrame(tk.Frame):
 
         # Фрейм для поля ввода даты начала соревнований
         frame_for_date_of_start = tk.Frame(frame_for_settings)
-        frame_for_date_of_start.pack()
+        frame_for_date_of_start.pack(fill="x")
 
         label_date_of_start = MyLabels(frame_for_date_of_start, text="Дата начала турнира:")
         label_date_of_start.pack(side="left")
 
-        entry_date_of_start = DateEntry(frame_for_date_of_start, selectmode="day", date_pattern="dd-mm-yyyy")
+        entry_date_of_start = DateEntry(frame_for_date_of_start, selectmode="day", date_pattern="dd-mm-yyyy",
+                                        font=("Times New Roman", 14),
+                                        background="#FFFFFF",
+                                        relief="solid",
+                                        width=67)
         entry_date_of_start.pack(side="left")
 
         # Фрейм для поля ввода даты окончания соревнований
         frame_for_date_of_end = tk.Frame(frame_for_settings)
-        frame_for_date_of_end.pack()
+        frame_for_date_of_end.pack(fill="x")
 
         label_date_of_end = MyLabels(frame_for_date_of_end, text="Дата окончания турнира:")
         label_date_of_end.pack(side="left")
 
-        entry_date_of_end = DateEntry(frame_for_date_of_end, selectmode="day", date_pattern="dd-mm-yyyy")
+        entry_date_of_end = DateEntry(frame_for_date_of_end, selectmode="day", date_pattern="dd-mm-yyyy",
+                                      font=("Times New Roman", 14),
+                                      background="#FFFFFF",
+                                      relief="solid",
+                                      width=67)
 
         # Задаем дату окончания по умолчанию равную дате начала + неделя
         date = entry_date_of_start.get_date() + Calendar.timedelta(days=7)
@@ -181,45 +191,52 @@ class ParametersFrame(tk.Frame):
 
         entry_date_of_end.pack(side="left")
 
+        # Приоритеты, по которым определяются места
+        priorities = ["1", "2", "3", "4"]
+
         # Фрейм для поля ввода приоритета 1
         frame_for_priority_1 = tk.Frame(frame_for_settings)
-        frame_for_priority_1.pack()
+        frame_for_priority_1.pack(fill="x")
 
         label_priority_1 = MyLabels(frame_for_priority_1, text="Приоритет 1 при равенстве очков:")
         label_priority_1.pack(side="left")
 
-        entry_priority_1 = tk.Entry(frame_for_priority_1)
-        entry_priority_1.pack(side="left")
+        field_priority_1 = tk.StringVar()
+        combobox_priority_1 = MyCombobox(frame_for_priority_1, values=priorities, textvariable=field_priority_1)
+        combobox_priority_1.pack(side="left")
 
         # Фрейм для поля ввода приоритета 2
         frame_for_priority_2 = tk.Frame(frame_for_settings)
-        frame_for_priority_2.pack()
+        frame_for_priority_2.pack(fill="x")
 
         label_priority_2 = MyLabels(frame_for_priority_2, text="Приоритет 2 при равенстве очков:")
         label_priority_2.pack(side="left")
 
-        entry_priority_2 = tk.Entry(frame_for_priority_2)
-        entry_priority_2.pack(side="left")
+        field_priority_2 = tk.StringVar()
+        combobox_priority_2 = MyCombobox(frame_for_priority_2, values=priorities, textvariable=field_priority_2)
+        combobox_priority_2.pack(side="left")
 
         # Фрейм для поля ввода приоритета 3
         frame_for_priority_3 = tk.Frame(frame_for_settings)
-        frame_for_priority_3.pack()
+        frame_for_priority_3.pack(fill="x")
 
         label_priority_3 = MyLabels(frame_for_priority_3, text="Приоритет 3 при равенстве очков:")
         label_priority_3.pack(side="left")
 
-        entry_priority_3 = tk.Entry(frame_for_priority_3)
-        entry_priority_3.pack(side="left")
+        field_priority_3 = tk.StringVar()
+        combobox_priority_3 = MyCombobox(frame_for_priority_3, values=priorities, textvariable=field_priority_3)
+        combobox_priority_3.pack(side="left")
 
         # Фрейм для поля ввода приоритета 4
         frame_for_priority_4 = tk.Frame(frame_for_settings)
-        frame_for_priority_4.pack()
+        frame_for_priority_4.pack(fill="x")
 
         label_priority_4 = MyLabels(frame_for_priority_4, text="Приоритет 4 при равенстве очков:")
         label_priority_4.pack(side="left")
 
-        entry_priority_4 = tk.Entry(frame_for_priority_4)
-        entry_priority_4.pack(side="left")
+        field_priority_4 = tk.StringVar()
+        combobox_priority_4 = MyCombobox(frame_for_priority_4, values=priorities, textvariable=field_priority_4)
+        combobox_priority_4.pack(side="left")
 
 
     def set_window(self):
