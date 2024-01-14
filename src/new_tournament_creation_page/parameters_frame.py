@@ -8,7 +8,7 @@ from tkcalendar import Calendar, DateEntry
 
 
 class MyLabels(tk.Label):
-    def __init__(self, frame, text, row, column, *args, **kwargs):
+    def __init__(self, frame, text, *args, **kwargs):
         tk.Label.__init__(self,
                           frame,
                           text=text,
@@ -16,7 +16,6 @@ class MyLabels(tk.Label):
                           background="#FFFFFF",
                           *args, **kwargs
                           )
-        self.grid(row=row, column=column, sticky="W", pady=5, padx=5)
 
 
 class MyEntry(tk.Entry):
@@ -24,12 +23,21 @@ class MyEntry(tk.Entry):
         tk.Entry.__init__(self,
                           frame,
                           font=("Times New Roman", 14),
-                          background="#E8E8E8",
-                          relief="flat",
+                          background="#FFFFFF",
+                          relief="solid",
                           width=69,
                           *args, **kwargs
                           )
 
+class MyButton(tk.Button):
+    def __init__(self, frame, *args, **kwargs):
+        tk.Button.__init__(self,
+                           frame,
+                           font=("Times New Roman", 14),
+                           background="#FFFFFF",
+                           relief="solid",
+                           activebackground="#E8E8E8",
+                           *args, **kwargs)
 
 class MyCombobox(ttk.Combobox):
     def __init__(self, frame, values, textvariable, width=67, state="normal", *args,
@@ -90,49 +98,51 @@ class ParametersFrame(tk.Frame):
         frame_for_data = tk.Frame(frame_for_settings)
         frame_for_data.pack(side="right")
 
-        label_tn_name = tk.Label(frame_for_labels, text="Название турнира:")
+        label_tn_name = MyLabels(frame_for_labels, text="Название турнира:")
         label_tn_name.pack()
 
-        entry_tn_name = tk.Entry(frame_for_settings)
+        entry_tn_name = MyEntry(frame_for_settings)
         entry_tn_name.pack()
 
-        label_path = tk.Label(frame_for_labels, text="Папка для сохранения турнира:")
+        label_path = MyLabels(frame_for_labels, text="Папка для сохранения турнира:")
         label_path.pack()
 
-        button_select_path = tk.Button(frame_for_settings, text="Выбрать папку для сохранения")
+        button_select_path = MyButton(frame_for_settings, text="Выбрать папку для сохранения")
         button_select_path.pack()
 
-        label_referee_name = tk.Label(frame_for_labels, text="ФИО судьи:")
+        label_referee_name = MyLabels(frame_for_labels, text="ФИО судьи:")
         label_referee_name.pack()
 
-        entry_referee_name = tk.Entry(frame_for_settings)
+        entry_referee_name = MyEntry(frame_for_settings)
         entry_referee_name.pack()
 
-        label_assistant_referee_name = tk.Label(frame_for_labels, text="ФИО помощника судьи:")
+        label_assistant_referee_name = MyLabels(frame_for_labels, text="ФИО помощника судьи:")
         label_assistant_referee_name.pack()
 
-        entry_assistant_referee_name = tk.Entry(frame_for_settings)
+        entry_assistant_referee_name = MyEntry(frame_for_settings)
         entry_assistant_referee_name.pack()
 
-        label_system = tk.Label(frame_for_labels, text="Система проведения соревнований:")
+        label_system = MyLabels(frame_for_labels, text="Система проведения соревнований:")
         label_system.pack()
 
-        entry_system = tk.Entry(frame_for_settings)
+        system = ["Швейцарская система", "Олимпийская система", "Круговая система"]
+        field = tk.StringVar()
+        entry_system = MyCombobox(frame_for_settings, values=system, textvariable=field)
         entry_system.pack()
 
-        label_count_of_tours = tk.Label(frame_for_labels, text="Количество туров:")
+        label_count_of_tours = MyLabels(frame_for_labels, text="Количество туров:")
         label_count_of_tours.pack()
 
-        entry_count_of_tours = tk.Entry(frame_for_settings)
+        entry_count_of_tours = MyEntry(frame_for_settings)
         entry_count_of_tours.pack()
 
-        label_date_of_start = tk.Label(frame_for_labels, text="Дата начала турнира:")
+        label_date_of_start = MyLabels(frame_for_labels, text="Дата начала турнира:")
         label_date_of_start.pack()
 
         entry_date_of_start = DateEntry(frame_for_settings, selectmode="day", date_pattern="dd-mm-yyyy")
         entry_date_of_start.pack()
 
-        label_date_of_end = tk.Label(frame_for_labels, text="Дата окончания турнира:")
+        label_date_of_end = MyLabels(frame_for_labels, text="Дата окончания турнира:")
         label_date_of_end.pack()
 
         entry_date_of_end = DateEntry(frame_for_settings, selectmode="day", date_pattern="dd-mm-yyyy")
@@ -143,25 +153,25 @@ class ParametersFrame(tk.Frame):
 
         entry_date_of_end.pack()
 
-        label_priority_1 = tk.Label(frame_for_labels, text="Приоритет 1 при равенстве очков:")
+        label_priority_1 = MyLabels(frame_for_labels, text="Приоритет 1 при равенстве очков:")
         label_priority_1.pack()
 
         entry_priority_1 = tk.Entry(frame_for_settings)
         entry_priority_1.pack()
 
-        label_priority_2 = tk.Label(frame_for_labels, text="Приоритет 2 при равенстве очков:")
+        label_priority_2 = MyLabels(frame_for_labels, text="Приоритет 2 при равенстве очков:")
         label_priority_2.pack()
 
         entry_priority_2 = tk.Entry(frame_for_settings)
         entry_priority_2.pack()
 
-        label_priority_3 = tk.Label(frame_for_labels, text="Приоритет 3 при равенстве очков:")
+        label_priority_3 = MyLabels(frame_for_labels, text="Приоритет 3 при равенстве очков:")
         label_priority_3.pack()
 
         entry_priority_3 = tk.Entry(frame_for_settings)
         entry_priority_3.pack()
 
-        label_priority_4 = tk.Label(frame_for_labels, text="Приоритет 4 при равенстве очков:")
+        label_priority_4 = MyLabels(frame_for_labels, text="Приоритет 4 при равенстве очков:")
         label_priority_4.pack()
 
         entry_priority_4 = tk.Entry(frame_for_settings)
