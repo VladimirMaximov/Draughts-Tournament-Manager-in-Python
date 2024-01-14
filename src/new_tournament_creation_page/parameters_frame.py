@@ -4,6 +4,7 @@ from tkinter import filedialog as fd
 import start_page
 import tournament_and_results_table as tournament
 import participant_entry_page
+from tkcalendar import Calendar, DateEntry
 
 
 class MyLabels(tk.Label):
@@ -95,10 +96,11 @@ class ParametersFrame(tk.Frame):
         entry_tn_name = tk.Entry(frame_for_settings)
         entry_tn_name.pack()
 
-        label_path = tk.Label(frame_for_labels, text="")
+        label_path = tk.Label(frame_for_labels, text="Папка для сохранения турнира:")
         label_path.pack()
 
-        button
+        button_select_path = tk.Button(frame_for_settings, text="Выбрать папку для сохранения")
+        button_select_path.pack()
 
         label_referee_name = tk.Label(frame_for_labels, text="ФИО судьи:")
         label_referee_name.pack()
@@ -124,22 +126,21 @@ class ParametersFrame(tk.Frame):
         entry_count_of_tours = tk.Entry(frame_for_settings)
         entry_count_of_tours.pack()
 
-        label_current_tour = tk.Label(frame_for_labels, text="Номер текущего тура:")
-        label_current_tour.pack()
-
-        entry_current_tour = tk.Entry(frame_for_settings)
-        entry_current_tour.pack()
-
         label_date_of_start = tk.Label(frame_for_labels, text="Дата начала турнира:")
         label_date_of_start.pack()
 
-        entry_date_of_start = tk.Entry(frame_for_settings)
+        entry_date_of_start = DateEntry(frame_for_settings, selectmode="day", date_pattern="dd-mm-yyyy")
         entry_date_of_start.pack()
 
         label_date_of_end = tk.Label(frame_for_labels, text="Дата окончания турнира:")
         label_date_of_end.pack()
 
-        entry_date_of_end = tk.Entry(frame_for_settings)
+        entry_date_of_end = DateEntry(frame_for_settings, selectmode="day", date_pattern="dd-mm-yyyy")
+
+        # Задаем дату окончания по умолчанию равную дате начала + неделя
+        date = entry_date_of_start.get_date() + Calendar.timedelta(days=7)
+        entry_date_of_end.set_date(date=date)
+
         entry_date_of_end.pack()
 
         label_priority_1 = tk.Label(frame_for_labels, text="Приоритет 1 при равенстве очков:")
