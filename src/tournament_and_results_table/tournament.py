@@ -1,24 +1,47 @@
 import tournament_and_results_table as tart
-
+import pandas as pd
 
 class Tournament:
+    file_path = ""
 
-    def __init__(self, tournament_name="", referee_name="", assistant_referee_name="",
-                 system="", count_of_tours="", count_of_parties="",
-                 date="", priority_1="", priority_2="", priority_3="", priority_4=""):
-        self.tournament_name = tournament_name
-        self.referee_name = referee_name
-        self.assistant_referee_name = assistant_referee_name
-        self.system = system
-        self.count_of_tours = count_of_tours
-        self.count_of_parties = count_of_parties
-        self.date = date
-        self.priority_1 = priority_1
-        self.priority_2 = priority_2
-        self.priority_3 = priority_3
-        self.priority_4 = priority_4
-        self.current_tour = 1
-        self.players = []
+    def create_new_tournament(self, directory_path, tn_name):
+        pass
+
+    def get_tn_name(self):
+        pass
+
+    def get_referee_name(self):
+        pass
+
+    def get_assistant_referee_name(self):
+        pass
+
+    def get_system(self):
+        pass
+
+    def get_count_of_tours(self):
+        pass
+
+    def get_current_tour(self):
+        pass
+
+    def get_date_of_start(self):
+        pass
+
+    def get_date_of_end(self):
+        pass
+
+    def priority_1(self):
+        pass
+
+    def priority_2(self):
+        pass
+
+    def priority_3(self):
+        pass
+
+    def priority_4(self):
+        pass
 
     def add_player(self, name):
         self.players.append(tart.Player(name, 0, [], 0, 0, 0))

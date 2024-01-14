@@ -1,23 +1,23 @@
 class Player:
 
-    def __init__(self, name, number_of_points=0, list_of_opponents=None,
-                 number_of_wins=0, schmullan_coefficient=0, buchholz_coefficient=0):
+    def __init__(self, number, name, date_of_birthday, list_of_opponents=None, number_of_points=0,
+                 number_of_wins=0, schmullan_coefficient=0, buchholz_coefficient=0, place=None):
+        self.number = number  # Порядковый номер
         self.name = name
-        self.number_of_points = number_of_points
-        # Список оппонентов представлен как список кортежей,
-        # где каждый кортеж имеет 3 элемента -
-        # игрока, результат при игре с ним и цвет
+        self.date_of_birthday = date_of_birthday
         if list_of_opponents is None:
             self.list_of_opponents = []
         else:
             self.list_of_opponents = list_of_opponents
+
+        self.number_of_points = number_of_points
         self.number_of_wins = number_of_wins
         self.schmullan_coefficient = schmullan_coefficient
         self.buchholz_coefficient = buchholz_coefficient
-        # Принимает значение n, если n < 0, значит игрок больше
-        # сыграл партий чёрным цветом, если n > 0 - белым
-        self.last_game_color = 0
+        self.place = place
 
+    # Принимает значение n, если n < 0, значит игрок больше
+    # сыграл партий чёрным цветом, если n > 0 - белым
     def check_priority(self, priority: str, opponent, without_latter: bool = False):
         if priority == "Результат личной встречи":
             for opponent_from_list in self.list_of_opponents:
