@@ -51,6 +51,7 @@ class StartFrame(tk.Frame):
 
 def main():
     window = tk.Tk()
+    window.configure(background="#FFFFFF")
     StartFrame(window)
     window.mainloop()
 
