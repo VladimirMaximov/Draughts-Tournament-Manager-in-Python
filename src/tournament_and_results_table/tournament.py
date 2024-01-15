@@ -31,16 +31,16 @@ class Tournament:
     def get_date_of_end(self):
         pass
 
-    def priority_1(self):
+    def get_priority_1(self):
         pass
 
-    def priority_2(self):
+    def get_priority_2(self):
         pass
 
-    def priority_3(self):
+    def get_priority_3(self):
         pass
 
-    def priority_4(self):
+    def get_priority_4(self):
         pass
 
     def add_player(self, name):

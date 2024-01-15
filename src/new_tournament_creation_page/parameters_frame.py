@@ -1,3 +1,4 @@
+import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import filedialog as fd
@@ -5,6 +6,7 @@ import start_page
 import tournament_and_results_table as tournament
 import participant_entry_page
 from tkcalendar import Calendar, DateEntry
+import pandas as pd
 
 
 class MyLabels(tk.Label):
@@ -30,6 +32,7 @@ class MyEntry(tk.Entry):
                           *args, **kwargs
                           )
 
+
 class MyButton(tk.Button):
     def __init__(self, frame, font=("Times New Roman", 10), width=88, *args, **kwargs):
         tk.Button.__init__(self,
@@ -40,6 +43,7 @@ class MyButton(tk.Button):
                            width=width,
                            activebackground="#E8E8E8",
                            *args, **kwargs)
+
 
 class MyCombobox(ttk.Combobox):
     def __init__(self, frame, values, textvariable, width=67, state="normal", *args,
@@ -67,7 +71,7 @@ class ParametersFrame(tk.Frame):
         else:
             self.tn = tn
 
-        self.create_elements(tn)
+        self.create_elements()
         self.pack(expand=1)
 
     def create_start_page(self):
@@ -82,7 +86,71 @@ class ParametersFrame(tk.Frame):
         [child.destroy() for child in self.parent.winfo_children()]
         participant_entry_page.ParticipantsFrame(self.parent, self.tn)
 
-    def create_elements(self, tn):
+    @staticmethod
+    def create_path_to_file(path_to_directory, tournament_name, date_start: datetime.date):
+        return path_to_directory + "/" + tournament_name + " " + str(date_start) + ".xlsx"
+
+    @staticmethod
+    def create_excel_file(directory_path, data):
+        # data = [name_of_tn, referee_name, assistant_referee_name, system,
+        # count_of_tours, date_of_start, date_of_end,
+        # priority_1, priority_2, priority_3, priority_4]
+
+        # Базовая таблица пустая, так как ещё не внесены игроки
+        base_table = pd.DataFrame()
+
+        # Турнирные данные вносим и транспонируем для читаемости
+        tournament_data = pd.DataFrame({"Название турнира:": [data[0]],
+                                        "ФИО судьи:": [data[1]],
+                                        "ФИО помощника судьи:": [data[2]],
+                                        "Система проведения соревнований:": [data[3]],
+                                        "Количество туров:": [data[4]],
+                                        "Номер текущего тура": 1,
+                                        "Дата начала соревнований:": [data[5]],
+                                        "Дата окончания соревнований:": [data[6]],
+                                        "Приоритет 1 при равенстве очков:": [data[7]],
+                                        "Приоритет 2 при равенстве очков:": [data[8]],
+                                        "Приоритет 3 при равенстве очков:": [data[9]],
+                                        "Приоритет 4 при равенстве очков:": [data[10]]}).T
+        print(tournament_data)
+
+        # Туры пустые, так как ещё не внесены игроки и не проведено ни одного тура
+        tours = pd.DataFrame()
+
+        # Словарь названий таблиц и самих таблиц
+        sheets = {"Основная таблица": base_table, "Турнирные данные": tournament_data, "Туры": tours}
+
+        writer = pd.ExcelWriter(
+            ParametersFrame.create_path_to_file(directory_path, data[0], data[5]), engine="xlsxwriter")
+
+        for sheet_name in sheets.keys():
+            sheets[sheet_name].to_excel(writer, sheet_name=sheet_name, index=True, header=False)
+
+        writer.close()
+
+    @staticmethod
+    def change_excel_file(directory_path, data):
+        # data = [name_of_tn, referee_name, assistant_referee_name, system,
+        # count_of_tours, date_of_start, date_of_end,
+        # priority_1, priority_2, priority_3, priority_4]
+        tournament_data = pd.DataFrame({"Название турнира:": [data[0]],
+                                        "ФИО судьи:": [data[1]],
+                                        "ФИО помощника судьи:": [data[2]],
+                                        "Система проведения соревнований:": [data[3]],
+                                        "Количество туров:": [data[4]],
+                                        "Номер текущего тура": 1,
+                                        "Дата начала соревнований:": [data[5]],
+                                        "Дата окончания соревнований:": [data[6]],
+                                        "Приоритет 1 при равенстве очков:": [data[7]],
+                                        "Приоритет 2 при равенстве очков:": [data[8]],
+                                        "Приоритет 3 при равенстве очков:": [data[9]],
+                                        "Приоритет 4 при равенстве очков:": [data[10]]}).set_index(
+            "Название турнира:").T
+
+        tournament_data.to_excel(ParametersFrame.create_path_to_file(directory_path, data[0], data[5]),
+                                 sheet_name="Турнирные данные", index=False)
+
+    def create_elements(self):
 
         # Фрейм для названия раздела
         frame_for_title = tk.Frame(self.parent, background="#FFFFFF")
@@ -112,7 +180,19 @@ class ParametersFrame(tk.Frame):
         label_path = MyLabels(frame_for_path, text="Папка для сохранения турнира:")
         label_path.pack(side="left", padx=5)
 
-        button_select_path = MyButton(frame_for_path, text="Выбрать папку для сохранения", border=1)
+        # Переменная, хранящая путь к папке, в которой будет храниться файл
+        path = ""
+
+        # Определяем путь к файлу
+        def take_path():
+            nonlocal path
+            directory_path = fd.askdirectory()
+            if directory_path != "":
+                path = directory_path
+                button_select_path.configure(text=path)
+
+        button_select_path = MyButton(frame_for_path, text="Выбрать папку для сохранения", border=1,
+                                      command=take_path)
         button_select_path.pack(side="left", padx=5)
 
         # Фрейм для ФИО судьи
@@ -239,23 +319,27 @@ class ParametersFrame(tk.Frame):
         frame_for_buttons = tk.Frame(frame_for_settings, background="#FFFFFF")
         frame_for_buttons.pack(fill="x", pady=5)
 
-        button_next_page = MyButton(frame_for_buttons, font=("Times New Roman", 14), text="Далее", width=15)
+        # При нажатии кнопки далее вызывается функция next_step
+        def next_step():
+            data = [entry_tn_name.get(), entry_referee_name.get(), entry_assistant_referee_name.get(),
+                    combobox_system.get(), entry_count_of_tours.get(), entry_date_of_start.get_date(),
+                    entry_date_of_end.get_date(), combobox_priority_1.get(), combobox_priority_2.get(),
+                    combobox_priority_3.get(), combobox_priority_4.get()]
+
+            # Если объект турнир - пустой, то создаем файл,
+            # а также записываем путь к нему в объект турнир
+            if self.tn.file_path == "":
+                self.create_excel_file(path, data)
+                self.tn.file_path = self.create_path_to_file(path, data[0], data[5])
+            # В противном случае просто изменяем необходимые данные
+            else:
+                self.change_excel_file(path, data)
+
+            self.create_participants_page()
+
+        button_next_page = MyButton(frame_for_buttons, font=("Times New Roman", 14), text="Далее", width=15,
+                                    command=next_step)
         button_next_page.pack(side="right", padx=5)
 
         button_previous_page = MyButton(frame_for_buttons, font=("Times New Roman", 14), text="Назад", width=15)
         button_previous_page.pack(side="left", padx=5)
-
-
-    def set_window(self):
-        width = 1000
-        height = 600
-        self.parent.title("Настройки")
-        self.parent.configure(background="#FFFFFF")
-
-        screen_width = self.parent.winfo_screenwidth()
-        screen_height = self.parent.winfo_screenheight()
-
-        x = (screen_width - width) / 2
-        y = (screen_height - height) / 2
-
-        self.parent.geometry(f"{width}x{height}+{int(x)}+{int(y)}")
