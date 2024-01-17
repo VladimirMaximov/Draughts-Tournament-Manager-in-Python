@@ -7,10 +7,8 @@ from tkinter import messagebox
 
 class ParticipantsFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: tart.Tournament, from_settings=False):
+    def __init__(self, parent: tk.Tk, tn: tart.Tournament):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
-        self.from_settings = from_settings
-        self.players = tn.players
         self.parent = parent
         self.tn = tn
         self.create_elements()
@@ -18,7 +16,7 @@ class ParticipantsFrame(tk.Frame):
 
     def create_parameters_frame(self):
         [child.destroy() for child in self.parent.winfo_children()]
-        nt_page.ParametersFrame(parent=self.parent, tn=self.tn, from_settings=self.from_settings)
+        nt_page.ParametersFrame(parent=self.parent, tn=self.tn)
 
     def create_tours_frame(self):
         if len(self.tn.players) == 0:

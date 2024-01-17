@@ -63,14 +63,10 @@ class MyCombobox(ttk.Combobox):
 
 class ParametersFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = None):
+    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = tournament.Tournament()):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
-        if tn is None:
-            self.tn = tournament.Tournament()
-        else:
-            self.tn = tn
-
+        self.tn = tn
         self.create_elements()
         self.pack(expand=1)
 
@@ -80,9 +76,6 @@ class ParametersFrame(tk.Frame):
 
     def create_participants_page(self):
 
-        self.tn.count_of_tours = int(self.tn.count_of_tours)
-        self.tn.count_of_parties = int(self.tn.count_of_parties)
-
         [child.destroy() for child in self.parent.winfo_children()]
         participant_entry_page.ParticipantsFrame(self.parent, self.tn)
 
@@ -90,8 +83,8 @@ class ParametersFrame(tk.Frame):
     def create_path_to_file(path_to_directory, tournament_name, date_start: datetime.date):
         return path_to_directory + "/" + tournament_name + " " + str(date_start) + ".xlsx"
 
-    @staticmethod
-    def create_excel_file(directory_path, data):
+
+    def create_excel_file(self, data):
         # data = [name_of_tn, referee_name, assistant_referee_name, system,
         # count_of_tours, date_of_start, date_of_end,
         # priority_1, priority_2, priority_3, priority_4]
@@ -112,7 +105,6 @@ class ParametersFrame(tk.Frame):
                                         "Приоритет 2 при равенстве очков:": [data[8]],
                                         "Приоритет 3 при равенстве очков:": [data[9]],
                                         "Приоритет 4 при равенстве очков:": [data[10]]}).T
-        print(tournament_data)
 
         # Туры пустые, так как ещё не внесены игроки и не проведено ни одного тура
         tours = pd.DataFrame()
@@ -120,16 +112,14 @@ class ParametersFrame(tk.Frame):
         # Словарь названий таблиц и самих таблиц
         sheets = {"Основная таблица": base_table, "Турнирные данные": tournament_data, "Туры": tours}
 
-        writer = pd.ExcelWriter(
-            ParametersFrame.create_path_to_file(directory_path, data[0], data[5]), engine="xlsxwriter")
+        writer = pd.ExcelWriter(self.tn.file_path, engine="xlsxwriter")
 
         for sheet_name in sheets.keys():
             sheets[sheet_name].to_excel(writer, sheet_name=sheet_name, index=True, header=False)
 
         writer.close()
 
-    @staticmethod
-    def change_excel_file(directory_path, data):
+    def change_excel_file(self, data, current_tour):
         # data = [name_of_tn, referee_name, assistant_referee_name, system,
         # count_of_tours, date_of_start, date_of_end,
         # priority_1, priority_2, priority_3, priority_4]
@@ -138,7 +128,7 @@ class ParametersFrame(tk.Frame):
                                         "ФИО помощника судьи:": [data[2]],
                                         "Система проведения соревнований:": [data[3]],
                                         "Количество туров:": [data[4]],
-                                        "Номер текущего тура": 1,
+                                        "Номер текущего тура": current_tour,
                                         "Дата начала соревнований:": [data[5]],
                                         "Дата окончания соревнований:": [data[6]],
                                         "Приоритет 1 при равенстве очков:": [data[7]],
@@ -147,8 +137,7 @@ class ParametersFrame(tk.Frame):
                                         "Приоритет 4 при равенстве очков:": [data[10]]}).set_index(
             "Название турнира:").T
 
-        tournament_data.to_excel(ParametersFrame.create_path_to_file(directory_path, data[0], data[5]),
-                                 sheet_name="Турнирные данные", index=False)
+        tournament_data.to_excel(self.tn.file_path, sheet_name="Турнирные данные", index=False)
 
     def create_elements(self):
 
@@ -325,15 +314,16 @@ class ParametersFrame(tk.Frame):
                     combobox_system.get(), entry_count_of_tours.get(), entry_date_of_start.get_date(),
                     entry_date_of_end.get_date(), combobox_priority_1.get(), combobox_priority_2.get(),
                     combobox_priority_3.get(), combobox_priority_4.get()]
-
             # Если объект турнир - пустой, то создаем файл,
             # а также записываем путь к нему в объект турнир
             if self.tn.file_path == "":
-                self.create_excel_file(path, data)
                 self.tn.file_path = self.create_path_to_file(path, data[0], data[5])
-            # В противном случае просто изменяем необходимые данные
+                self.create_excel_file(data)
+            # В противном случае просто изменяем необходимые данные, передавая в аргументе также текущий тур
             else:
-                self.change_excel_file(path, data)
+                data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
+                ct = data[data.columns[1]].tolist()[4]
+                self.change_excel_file(data, ct)
 
             self.create_participants_page()
 
@@ -341,5 +331,24 @@ class ParametersFrame(tk.Frame):
                                     command=next_step)
         button_next_page.pack(side="right", padx=5)
 
-        button_previous_page = MyButton(frame_for_buttons, font=("Times New Roman", 14), text="Назад", width=15)
+        button_previous_page = MyButton(frame_for_buttons, font=("Times New Roman", 14), text="Назад", width=15,
+                                        command=self.create_start_page)
         button_previous_page.pack(side="left", padx=5)
+
+        # Если мы вернулись со страницы игроков, то заполняем все ячейки
+        if self.tn.file_path != "":
+            tournament_data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
+            tn_name = tournament_data.columns[1]
+            referee_name, assistant_referee_name, system, count_of_tours, \
+                current_tour, start, end, pr1, pr2, pr3, pr4 = tuple(tournament_data[tournament_data.columns[1]].tolist())
+            entry_tn_name.insert(0, tn_name)
+            entry_referee_name.insert(0, referee_name)
+            entry_assistant_referee_name.insert(0, assistant_referee_name)
+            combobox_system.set(system)
+            entry_count_of_tours.insert(0, count_of_tours)
+            entry_date_of_start.set_date(start)
+            entry_date_of_end.set_date(end)
+            combobox_priority_1.set(pr1)
+            combobox_priority_2.set(pr2)
+            combobox_priority_3.set(pr3)
+            combobox_priority_4.set(pr4)
