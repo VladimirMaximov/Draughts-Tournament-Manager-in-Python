@@ -258,7 +258,10 @@ class ParametersFrame(tk.Frame):
         entry_date_of_end.pack(side="left", padx=5)
 
         # Приоритеты, по которым определяются места
-        priorities = ["1", "2", "3", "4"]
+        priorities = ["Система коэффициентов Бухгольца",
+                      "Система коэффициентов Шмульяна",
+                      "Наибольшее число побед",
+                      "Результат личной встречи"]
 
         # Фрейм для поля ввода приоритета 1
         frame_for_priority_1 = tk.Frame(frame_for_settings, background="#FFFFFF")

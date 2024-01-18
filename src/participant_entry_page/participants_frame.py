@@ -19,15 +19,7 @@ class ParticipantsFrame(tk.Frame):
         nt_page.ParametersFrame(parent=self.parent, tn=self.tn)
 
     def create_tours_frame(self):
-        if len(self.tn.players) == 0:
-            messagebox.showerror(title="Ошибка", message="Вы не добавили ни одного игрока")
-            return
-
-        [child.destroy() for child in self.parent.winfo_children()]
-        if not self.tn.players:
-            self.tn.add_players(self.players)
-
-        td_page.ToursFrame(parent=self.parent, tn=self.tn)
+        pass
 
     def create_elements(self):
         # fft - frame for text
@@ -70,22 +62,17 @@ class ParticipantsFrame(tk.Frame):
         def add_player(event=None):
             if entry1.get() != "":
                 new_player = entry1.get()
-                self.players.append(tart.Player(new_player))
-                players_var.set([f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
+                self.tn.players.append(tart.Player(len(self.tn.players), new_player))
+                players_var.set([f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])
                 entry1.delete(0, tk.END)
 
         def delete_player():
             selection = listbox.curselection()
             if len(selection) != 0:
-                self.players.pop(selection[0])
-                players_var.set([f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
+                self.tn.players.pop(selection[0])
+                players_var.set([f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])
                 listbox.selection_clear(0, tk.END)
-            else:
-                player_to_remove = entry1.get()
-                if self.players.count(tart.Player(player_to_remove)) != 0:
-                    self.players.remove(tart.Player(player_to_remove))
-                    players_var.set([f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
-                    entry1.delete(0, tk.END)
+
 
         def set_entry1(event):
             selection = listbox.curselection()
@@ -105,7 +92,7 @@ class ParticipantsFrame(tk.Frame):
         entry1.grid(row=1, column=1, sticky="w", pady=5, padx=(5, 5))
         entry1.bind("<Return>", add_player)
 
-        players_var = tk.Variable(value=[f" {i + 1}. " + self.players[i].name for i in range(len(self.players))])
+        players_var = tk.Variable(value=[f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])
         listbox = tk.Listbox(ffp,
                              relief="solid",
                              border=2,
@@ -156,12 +143,9 @@ class ParticipantsFrame(tk.Frame):
                                )
         button_add.grid(row=0, column=2, sticky="W", padx=25, pady=(10, 0))
 
-        if self.from_settings:
-            text = "Сохранить"
-            command = None
-        else:
-            text = "Далее"
-            command = self.create_tours_frame
+        text = "Далее"
+        command = self.create_tours_frame
+
         button_next = tk.Button(ffb, text=text,
                                 font=("Times New Roman", 14),
                                 background="#FFFFFF",
