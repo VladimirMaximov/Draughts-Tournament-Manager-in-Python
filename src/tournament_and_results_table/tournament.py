@@ -44,13 +44,13 @@ class Tournament:
     def get_priority_4(self):
         pass
 
-    def add_player(self, name):
-        self.players.append(tart.Player(name, 0, [], 0, 0, 0))
+    def add_player(self, number, name):
+        self.players.append(tart.Player(number, name))
 
     def add_players(self, players):
         self.players = players
 
-    def sort_players(self, without_latter: bool = False):
+    def sort_players(self):
         # Сортируем по количеству очков
         self.players.sort(key=lambda x: x.number_of_points, reverse=True)
 
@@ -63,13 +63,14 @@ class Tournament:
                 # Перебираем приоритеты, если один из приоритетов
                 # оказался у одного игрока лучше, чем у другого, делам
                 # соответствующее действие и выходим из цикла перебора приоритетов
-                for priority in [self.priority_1, self.priority_2, self.priority_3, self.priority_4]:
-                    if pl_1.check_priority(priority, pl_2, without_latter) < pl_2.check_priority(priority, pl_1,
-                                                                                                 without_latter):
+                tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
+                pr1, pr2, pr3, pr4 = tuple(tournament_data[tournament_data.columns[1]].tolist()[-4:])
+
+                for pr in [pr1, pr2, pr3, pr4]:
+                    if pl_1.check_priority(pr, pl_2) < pl_2.check_priority(pr, pl_1):
                         self.players[i], self.players[i + 1] = self.players[i + 1], self.players[i]
                         break
-                    elif pl_1.check_priority(self.priority_1, pl_2, without_latter) > pl_2.check_priority(
-                            self.priority_1, pl_1, without_latter):
+                    elif pl_1.check_priority(pr1, pl_2) > pl_2.check_priority(pr1, pl_1):
                         break
 
     def draw(self):
@@ -83,7 +84,7 @@ class Tournament:
                     delete_plus = True
                     break
             if not delete_plus:
-                self.players.append(tart.Player("+"))
+                self.players.append(tart.Player(len(self.players), "+"))
 
         # В словаре pairs: ключ - игрок, играющий белым цветом, значение - черным
         pairs = {}
