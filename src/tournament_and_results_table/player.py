@@ -54,9 +54,44 @@ class Player:
     def set_buchholz_coefficient(self):
         result = 0
 
-        list_of_opponents = self.list_of_opponents
-
-        for opponent in list_of_opponents:
-            result += opponent[0].number_of_points
+        for opponent in self.list_of_opponents:
+            result += opponent.number_of_points
 
         self.buchholz_coefficient = result
+
+    def set_median_solkoff_coefficient(self):
+        result = 0
+
+        minimal_result = 10000000
+        maximal_result = -1
+
+        for opponent in self.list_of_opponents:
+            result += opponent.number_of_points
+
+            if opponent.number_of_points < minimal_result:
+                minimal_result = opponent.number_of_points
+
+            if opponent.number_of_points > maximal_result:
+                maximal_result = opponent.number_of_points
+
+        return result - minimal_result - maximal_result
+
+    def set_median_solkoff_coefficient(self):
+        result = 0
+
+        minimal_result = 10000000
+        maximal_result = -1
+
+        for opponent in self.list_of_opponents:
+            result += opponent.number_of_points
+
+            if opponent.number_of_points < minimal_result:
+                minimal_result = opponent.number_of_points
+
+            if opponent.number_of_points > maximal_result:
+                maximal_result = opponent.number_of_points
+
+        return result - minimal_result - maximal_result
+
+
+
