@@ -74,13 +74,15 @@ class Player:
             if opponent.number_of_points > maximal_result:
                 maximal_result = opponent.number_of_points
 
-        return result - minimal_result - maximal_result
+        if minimal_result != 10000000:
+            return result - minimal_result - maximal_result
+        else:
+            return 0
 
-    def set_median_solkoff_coefficient(self):
+    def set_full_truncated_solkoff_coefficient_without_one_worst_result(self):
         result = 0
 
         minimal_result = 10000000
-        maximal_result = -1
 
         for opponent in self.list_of_opponents:
             result += opponent.number_of_points
@@ -88,10 +90,27 @@ class Player:
             if opponent.number_of_points < minimal_result:
                 minimal_result = opponent.number_of_points
 
-            if opponent.number_of_points > maximal_result:
-                maximal_result = opponent.number_of_points
+        if result != 10000000:
+            return result - minimal_result
+        else:
+            return 0
 
-        return result - minimal_result - maximal_result
+    def set_full_truncated_solkoff_coefficient_without_two_worst_result(self):
+        result = 0
 
+        minimal_result = 100000000
+        minimal_result_2 = 100000000
+        for opponent in self.list_of_opponents:
+            result += opponent.number_of_points
 
+            if opponent.number_of_points < minimal_result:
+                minimal_result = opponent.number_of_points
+            elif opponent.number_of_points < minimal_result_2:
+                minimal_result_2 = opponent.number_of_points
 
+        if minimal_result != 100000000 and minimal_result_2 != 100000000:
+            return result - minimal_result - minimal_result_2
+        elif minimal_result != 100000000:
+            return result - minimal_result
+        else:
+            return 0
