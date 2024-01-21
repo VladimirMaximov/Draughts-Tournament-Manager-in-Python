@@ -137,7 +137,8 @@ class ParametersFrame(tk.Frame):
                                         "Приоритет 4 при равенстве очков:": [data[10]]}).set_index(
             "Название турнира:").T
 
-        tournament_data.to_excel(self.tn.file_path, sheet_name="Турнирные данные", index=False)
+        writer = pd.ExcelWriter(self.tn.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
+        tournament_data.to_excel(writer, sheet_name="Турнирные данные", index=False)
 
     def create_elements(self):
 
@@ -324,8 +325,8 @@ class ParametersFrame(tk.Frame):
                 self.create_excel_file(data)
             # В противном случае просто изменяем необходимые данные, передавая в аргументе также текущий тур
             else:
-                data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
-                ct = data[data.columns[1]].tolist()[4]
+                data_for_current_tour = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
+                ct = data_for_current_tour[data_for_current_tour.columns[1]].tolist()[4]
                 self.change_excel_file(data, ct)
 
             self.create_participants_page()
@@ -345,6 +346,10 @@ class ParametersFrame(tk.Frame):
             referee_name, assistant_referee_name, system, count_of_tours, \
                 current_tour, start, end, pr1, pr2, pr3, pr4 = tuple(tournament_data[tournament_data.columns[1]].tolist())
             entry_tn_name.insert(0, tn_name)
+
+            index = self.tn.file_path.rindex("/")
+            button_select_path.configure(text=self.tn.file_path[: index])
+
             entry_referee_name.insert(0, referee_name)
             entry_assistant_referee_name.insert(0, assistant_referee_name)
             combobox_system.set(system)
