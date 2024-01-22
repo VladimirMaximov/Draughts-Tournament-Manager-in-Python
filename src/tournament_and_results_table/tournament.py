@@ -4,6 +4,8 @@ import pandas as pd
 class Tournament:
     file_path = ""
     players = []
+    pr1 = ""
+    pr2 = ""
 
     def create_new_tournament(self, directory_path, tn_name):
         pass
