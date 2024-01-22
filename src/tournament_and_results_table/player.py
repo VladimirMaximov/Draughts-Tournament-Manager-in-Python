@@ -1,7 +1,9 @@
 class Player:
 
     def __init__(self, number, name, list_of_opponents=None, number_of_points=0,
-                 number_of_wins=0, schmullan_coefficient=0, buchholz_coefficient=0, place=None):
+                 number_of_wins=0, schmullan_coefficient=0, buchholz_coefficient=0,
+                 median_solkoff_coefficient=0, truncated_solkoff_coefficient_1=0,
+                 truncated_solkoff_coefficient_2=0, place=None):
         self.number = number  # Порядковый номер
         self.name = name
         if list_of_opponents is None:
@@ -13,10 +15,34 @@ class Player:
         self.number_of_wins = number_of_wins
         self.schmullan_coefficient = schmullan_coefficient
         self.buchholz_coefficient = buchholz_coefficient
+        self.median_solkoff_coefficient = median_solkoff_coefficient
+        self.truncated_solkoff_coefficient_1 = truncated_solkoff_coefficient_1
+        self.truncated_solkoff_coefficient_2 = truncated_solkoff_coefficient_2
         self.place = place
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def get_coefficient(self, name_of_coefficient):
+        if name_of_coefficient == "Наибольшее число побед":
+            return self.number_of_wins
+        elif name_of_coefficient == "Коэффициент Шмульяна":
+            self.set_schmullan_coefficient()
+            return self.schmullan_coefficient
+        elif name_of_coefficient == "Коэффициент Бухгольца":
+            self.set_buchholz_coefficient()
+            return self.buchholz_coefficient
+        elif name_of_coefficient == "Медианный коэффициент Солкофа":
+            self.set_median_solkoff_coefficient()
+            return self.median_solkoff_coefficient
+        elif name_of_coefficient == "Полный усеченный коэффициент Солкофа (без 1 худшего результата)":
+            self.set_full_truncated_solkoff_coefficient_without_one_worst_result()
+            return self.truncated_solkoff_coefficient_1
+        elif name_of_coefficient == "Полный усеченный коэффициент Солкофа (без 2 худших результатов)":
+            self.set_full_truncated_solkoff_coefficient_without_two_worst_result()
+            return self.truncated_solkoff_coefficient_2
+        else:
+            return 0
 
     # Также передаем оппонента, так как
     # возможна проверка личной встречи
