@@ -140,6 +140,8 @@ class ParametersFrame(tk.Frame):
         writer = pd.ExcelWriter(self.tn.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
         tournament_data.to_excel(writer, sheet_name="Турнирные данные", index=False)
 
+        writer.close()
+
     def create_elements(self):
 
         # Фрейм для названия раздела
@@ -318,6 +320,10 @@ class ParametersFrame(tk.Frame):
                     combobox_system.get(), entry_count_of_tours.get(), entry_date_of_start.get_date(),
                     entry_date_of_end.get_date(), combobox_priority_1.get(), combobox_priority_2.get(),
                     combobox_priority_3.get(), combobox_priority_4.get()]
+
+            self.tn.pr1 = combobox_priority_1.get()
+            self.tn.pr2 = combobox_priority_2.get()
+
             # Если объект турнир - пустой, то создаем файл,
             # а также записываем путь к нему в объект турнир
             if self.tn.file_path == "":

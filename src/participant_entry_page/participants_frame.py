@@ -3,6 +3,7 @@ import new_tournament_creation_page as nt_page
 import tournament_and_results_table as tart
 import tour_draw_page as td_page
 from tkinter import messagebox
+import pandas as pd
 
 
 class ParticipantsFrame(tk.Frame):
@@ -19,7 +20,32 @@ class ParticipantsFrame(tk.Frame):
         nt_page.ParametersFrame(parent=self.parent, tn=self.tn)
 
     def create_tours_frame(self):
-        pass
+        self.change_excel_file()
+
+    def change_excel_file(self):
+        main_table_1 = pd.DataFrame({"Номер": [i for i in range(1, len(self.tn.players) + 1)],
+                                     "ФИО": [player.name for player in self.tn.players]
+                                     })
+        tournament_data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
+        count_of_tours = int(tournament_data[tournament_data.columns[1]].tolist()[3])
+        pr1 = self.tn.pr1
+        pr2 = self.tn.pr2
+
+        main_table_2 = pd.DataFrame({f"Тур {i}": [] for i in range(1, count_of_tours + 1)})
+
+        main_table_3 = pd.DataFrame({"Всего очков": [player.number_of_points for player in self.tn.players],
+                                     pr1: [player.get_coefficient(self.tn.pr1) for player in self.tn.players],
+                                     pr2: [player.get_coefficient(self.tn.pr2) for player in self.tn.players],
+                                     "Место": [player.place for player in self.tn.players]})
+
+        main_table_1 = main_table_1.join(main_table_2).join(main_table_3)
+
+        writer = pd.ExcelWriter(self.tn.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
+        main_table_1.to_excel(writer, sheet_name="Основная таблица", index=False)
+
+        writer.close()
+
+        print(main_table_1)
 
     def create_elements(self):
         frame_for_label = tk.Frame(self,
@@ -37,10 +63,10 @@ class ParticipantsFrame(tk.Frame):
 
         frame_for_entry.pack(expand=1, fill="both")
         frame_for_listbox = tk.Frame(self,
-                                  background="#FFFFFF",
-                                  width=1000,
-                                  height=400
-                                  )
+                                     background="#FFFFFF",
+                                     width=1000,
+                                     height=400
+                                     )
 
         frame_for_listbox.pack(expand=1, fill="both")
         frame_for_buttons = tk.Frame(self,
@@ -104,7 +130,6 @@ class ParticipantsFrame(tk.Frame):
 
             # Если выделена хотя бы одна строка
             if len(selection) != 0:
-
                 # Изменяем первую строку, которая была выделена
                 self.tn.players[selection[0]] = tart.Player(selection[0], entry1.get())
 
