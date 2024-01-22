@@ -341,12 +341,19 @@ class ParametersFrame(tk.Frame):
 
         # Если мы вернулись со страницы игроков, то заполняем все ячейки
         if self.tn.file_path != "":
+            # Достаём все данные из таблицы
             tournament_data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
             tn_name = tournament_data.columns[1]
             referee_name, assistant_referee_name, system, count_of_tours, \
                 current_tour, start, end, pr1, pr2, pr3, pr4 = tuple(tournament_data[tournament_data.columns[1]].tolist())
+
+            # Вставляем данные в соответствующие поля
             entry_tn_name.insert(0, tn_name)
 
+            # Так как в объекте "tournament" хранится путь
+            # вместе с названием файла, а при вводе мы выбираем
+            # только путь, то необходимо отбросить название
+            # файла и после записать путь в кнопку
             index = self.tn.file_path.rindex("/")
             button_select_path.configure(text=self.tn.file_path[: index])
 
