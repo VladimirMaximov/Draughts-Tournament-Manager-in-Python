@@ -134,11 +134,10 @@ class ParametersFrame(tk.Frame):
                                         "Приоритет 1 при равенстве очков:": [data[7]],
                                         "Приоритет 2 при равенстве очков:": [data[8]],
                                         "Приоритет 3 при равенстве очков:": [data[9]],
-                                        "Приоритет 4 при равенстве очков:": [data[10]]}).set_index(
-            "Название турнира:").T
+                                        "Приоритет 4 при равенстве очков:": [data[10]]}).T
 
         writer = pd.ExcelWriter(self.tn.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
-        tournament_data.to_excel(writer, sheet_name="Турнирные данные", index=False)
+        tournament_data.to_excel(writer, sheet_name="Турнирные данные", index=True, header=False)
 
         writer.close()
 
@@ -274,7 +273,8 @@ class ParametersFrame(tk.Frame):
         label_priority_1.pack(side="left", padx=5)
 
         field_priority_1 = tk.StringVar()
-        combobox_priority_1 = MyCombobox(frame_for_priority_1, values=priorities, textvariable=field_priority_1)
+        combobox_priority_1 = MyCombobox(frame_for_priority_1, values=priorities, textvariable=field_priority_1,
+                                         state="readonly")
         combobox_priority_1.pack(side="left", padx=5)
 
         # Фрейм для поля ввода приоритета 2
@@ -285,7 +285,8 @@ class ParametersFrame(tk.Frame):
         label_priority_2.pack(side="left", padx=5)
 
         field_priority_2 = tk.StringVar()
-        combobox_priority_2 = MyCombobox(frame_for_priority_2, values=priorities, textvariable=field_priority_2)
+        combobox_priority_2 = MyCombobox(frame_for_priority_2, values=priorities, textvariable=field_priority_2,
+                                         state="readonly")
         combobox_priority_2.pack(side="left", padx=5)
 
         # Фрейм для поля ввода приоритета 3
@@ -296,7 +297,8 @@ class ParametersFrame(tk.Frame):
         label_priority_3.pack(side="left", padx=5)
 
         field_priority_3 = tk.StringVar()
-        combobox_priority_3 = MyCombobox(frame_for_priority_3, values=priorities, textvariable=field_priority_3)
+        combobox_priority_3 = MyCombobox(frame_for_priority_3, values=priorities, textvariable=field_priority_3,
+                                         state="readonly")
         combobox_priority_3.pack(side="left", padx=5)
 
         # Фрейм для поля ввода приоритета 4
@@ -307,7 +309,8 @@ class ParametersFrame(tk.Frame):
         label_priority_4.pack(side="left", padx=5)
 
         field_priority_4 = tk.StringVar()
-        combobox_priority_4 = MyCombobox(frame_for_priority_4, values=priorities, textvariable=field_priority_4)
+        combobox_priority_4 = MyCombobox(frame_for_priority_4, values=priorities, textvariable=field_priority_4,
+                                         state="readonly")
         combobox_priority_4.pack(side="left", padx=5)
 
         # Фрейм для кнопок далее и назад
@@ -365,10 +368,11 @@ class ParametersFrame(tk.Frame):
 
             entry_referee_name.insert(0, referee_name)
             entry_assistant_referee_name.insert(0, assistant_referee_name)
-            combobox_system.set(system)
+            combobox_system.insert(0, system)
             entry_count_of_tours.insert(0, count_of_tours)
             entry_date_of_start.set_date(start)
             entry_date_of_end.set_date(end)
+
             combobox_priority_1.set(pr1)
             combobox_priority_2.set(pr2)
             combobox_priority_3.set(pr3)

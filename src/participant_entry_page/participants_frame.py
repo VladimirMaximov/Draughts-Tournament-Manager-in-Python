@@ -45,8 +45,6 @@ class ParticipantsFrame(tk.Frame):
 
         writer.close()
 
-        print(main_table_1)
-
     def create_elements(self):
         frame_for_label = tk.Frame(self,
                                    background="#FFFFFF",
