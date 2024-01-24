@@ -1,4 +1,5 @@
 import datetime
+import os
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import filedialog as fd
@@ -317,8 +318,18 @@ class ParametersFrame(tk.Frame):
         frame_for_buttons = tk.Frame(frame_for_settings, background="#FFFFFF")
         frame_for_buttons.pack(fill="x", pady=5)
 
+        # Проверка корректности ввода данных
+        def check_input_data():
+            if not os.path.isdir(path):
+                messagebox.showerror(title="Выберите папку",
+                                     message="Вы не выбрали папку, в которой будет "
+                                             "храниться файл турнира. Сделайте это, "
+                                             "прежде чем переходить на следующую страницу.")
+
         # При нажатии кнопки далее вызывается функция next_step
         def next_step():
+            check_input_data()
+
             data = [entry_tn_name.get(), entry_referee_name.get(), entry_assistant_referee_name.get(),
                     combobox_system.get(), entry_count_of_tours.get(), entry_date_of_start.get_date(),
                     entry_date_of_end.get_date(), combobox_priority_1.get(), combobox_priority_2.get(),
