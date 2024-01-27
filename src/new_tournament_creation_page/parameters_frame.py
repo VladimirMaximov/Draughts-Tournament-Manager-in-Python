@@ -47,7 +47,7 @@ class MyButton(tk.Button):
 
 
 class MyCombobox(ttk.Combobox):
-    def __init__(self, frame, values, textvariable, width=67, state="normal", *args,
+    def __init__(self, frame, values, textvariable=None, width=67, state="normal", *args,
                  **kwargs):
         ttk.Combobox.__init__(self,
                               frame,
@@ -214,9 +214,8 @@ class ParametersFrame(tk.Frame):
         label_system = MyLabels(frame_for_system, text="Система проведения соревнований:")
         label_system.pack(side="left", padx=5)
 
-        system = ["Швейцарская система", "Олимпийская система", "Круговая система"]
-        field_system = tk.StringVar()
-        combobox_system = MyCombobox(frame_for_system, values=system, textvariable=field_system)
+        systems = ["Швейцарская система", "Олимпийская система", "Круговая система"]
+        combobox_system = MyCombobox(frame_for_system, values=systems, state="readonly")
         combobox_system.pack(side="left", padx=5)
 
         # Фрейм для поля количества туров
@@ -273,8 +272,7 @@ class ParametersFrame(tk.Frame):
         label_priority_1 = MyLabels(frame_for_priority_1, text="Приоритет 1 при равенстве очков:")
         label_priority_1.pack(side="left", padx=5)
 
-        field_priority_1 = tk.StringVar()
-        combobox_priority_1 = MyCombobox(frame_for_priority_1, values=priorities, textvariable=field_priority_1,
+        combobox_priority_1 = MyCombobox(frame_for_priority_1, values=priorities,
                                          state="readonly")
         combobox_priority_1.pack(side="left", padx=5)
 
@@ -285,8 +283,7 @@ class ParametersFrame(tk.Frame):
         label_priority_2 = MyLabels(frame_for_priority_2, text="Приоритет 2 при равенстве очков:")
         label_priority_2.pack(side="left", padx=5)
 
-        field_priority_2 = tk.StringVar()
-        combobox_priority_2 = MyCombobox(frame_for_priority_2, values=priorities, textvariable=field_priority_2,
+        combobox_priority_2 = MyCombobox(frame_for_priority_2, values=priorities,
                                          state="readonly")
         combobox_priority_2.pack(side="left", padx=5)
 
@@ -297,8 +294,7 @@ class ParametersFrame(tk.Frame):
         label_priority_3 = MyLabels(frame_for_priority_3, text="Приоритет 3 при равенстве очков:")
         label_priority_3.pack(side="left", padx=5)
 
-        field_priority_3 = tk.StringVar()
-        combobox_priority_3 = MyCombobox(frame_for_priority_3, values=priorities, textvariable=field_priority_3,
+        combobox_priority_3 = MyCombobox(frame_for_priority_3, values=priorities,
                                          state="readonly")
         combobox_priority_3.pack(side="left", padx=5)
 
@@ -309,8 +305,7 @@ class ParametersFrame(tk.Frame):
         label_priority_4 = MyLabels(frame_for_priority_4, text="Приоритет 4 при равенстве очков:")
         label_priority_4.pack(side="left", padx=5)
 
-        field_priority_4 = tk.StringVar()
-        combobox_priority_4 = MyCombobox(frame_for_priority_4, values=priorities, textvariable=field_priority_4,
+        combobox_priority_4 = MyCombobox(frame_for_priority_4, values=priorities,
                                          state="readonly")
         combobox_priority_4.pack(side="left", padx=5)
 
@@ -320,20 +315,24 @@ class ParametersFrame(tk.Frame):
 
         # Проверка корректности ввода данных
         def check_input_data():
-            if not os.path.isdir(path):
+            if not (os.path.isdir(path) or os.path.isfile(path)):
                 messagebox.showerror(title="Выберите папку",
                                      message="Вы не выбрали папку, в которой будет "
                                              "храниться файл турнира. Сделайте это, "
                                              "прежде чем переходить на следующую страницу.")
+                return True
+            return False
 
         # При нажатии кнопки далее вызывается функция next_step
         def next_step():
-            check_input_data()
+            if check_input_data():
+                return
 
             data = [entry_tn_name.get(), entry_referee_name.get(), entry_assistant_referee_name.get(),
                     combobox_system.get(), entry_count_of_tours.get(), entry_date_of_start.get_date(),
                     entry_date_of_end.get_date(), combobox_priority_1.get(), combobox_priority_2.get(),
                     combobox_priority_3.get(), combobox_priority_4.get()]
+
 
             self.tn.pr1 = combobox_priority_1.get()
             self.tn.pr2 = combobox_priority_2.get()
@@ -377,9 +376,17 @@ class ParametersFrame(tk.Frame):
             index = self.tn.file_path.rindex("/")
             button_select_path.configure(text=self.tn.file_path[: index])
 
+            # Также заполняем переменную path, так как в функции
+            # проверки check_input_data мы проверяем содержимое данной переменной
+            path = self.tn.file_path[: index]
+
+            # Также во избежание ошибок не даем пользователю поменять путь к файлу,
+            # так как файл уже создан
+            button_select_path.configure(state="disabled")
+
             entry_referee_name.insert(0, referee_name)
             entry_assistant_referee_name.insert(0, assistant_referee_name)
-            combobox_system.insert(0, system)
+            combobox_system.set(system)
             entry_count_of_tours.insert(0, count_of_tours)
             entry_date_of_start.set_date(start)
             entry_date_of_end.set_date(end)
