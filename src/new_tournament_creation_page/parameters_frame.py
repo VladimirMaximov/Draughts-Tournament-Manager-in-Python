@@ -137,6 +137,16 @@ class ParametersFrame(tk.Frame):
                                         "Приоритет 3 при равенстве очков:": [data[9]],
                                         "Приоритет 4 при равенстве очков:": [data[10]]}).T
 
+        # Путь до папки с файлом
+        directory_path = self.tn.file_path[: self.tn.file_path.rindex("/")]
+
+        # Переименовываем файл, так как пользователь мог изменить дату или название турнира
+        os.rename(self.tn.file_path, self.create_path_to_file(directory_path, data[0], data[5]))
+
+        # Теперь переписываем путь к файлу
+        self.tn.file_path = self.create_path_to_file(directory_path, data[0], data[5])
+
+        # После чего уже заполняем новые данные
         writer = pd.ExcelWriter(self.tn.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
         tournament_data.to_excel(writer, sheet_name="Турнирные данные", index=True, header=False)
 
