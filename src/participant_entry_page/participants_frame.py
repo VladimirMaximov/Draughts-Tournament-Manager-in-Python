@@ -1,14 +1,14 @@
 import tkinter as tk
-import new_tournament_creation_page as nt_page
-import tournament_and_results_table as tart
-import tour_draw_page as td_page
-from tkinter import messagebox
+from new_tournament_creation_page import ParametersFrame
+from tournament_and_results_table import Tournament, Player
+from tour_draw_page import ToursFrame
+# from tkinter import messagebox
 import pandas as pd
 
 
 class ParticipantsFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: tart.Tournament):
+    def __init__(self, parent: tk.Tk, tn: Tournament):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
         self.tn = tn
@@ -17,10 +17,12 @@ class ParticipantsFrame(tk.Frame):
 
     def create_parameters_frame(self):
         [child.destroy() for child in self.parent.winfo_children()]
-        nt_page.ParametersFrame(parent=self.parent, tn=self.tn)
+        ParametersFrame(parent=self.parent, tn=self.tn)
 
     def create_tours_frame(self):
         self.change_excel_file()
+        [child.destroy() for child in self.parent.winfo_children()]
+        ToursFrame(parent=self.parent, tn=self.tn)
 
     def change_excel_file(self):
         main_table_1 = pd.DataFrame({"Номер": [i for i in range(1, len(self.tn.players) + 1)],
@@ -97,7 +99,7 @@ class ParticipantsFrame(tk.Frame):
                 new_player = entry1.get()
 
                 # Добавляем игрока в список игроков
-                self.tn.players.append(tart.Player(len(self.tn.players) + 1, new_player))
+                self.tn.players.append(Player(len(self.tn.players) + 1, new_player))
 
                 # Обновляем список игроков в виджете Text
                 players_var.set([f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])
@@ -129,7 +131,7 @@ class ParticipantsFrame(tk.Frame):
             # Если выделена хотя бы одна строка
             if len(selection) != 0:
                 # Изменяем первую строку, которая была выделена
-                self.tn.players[selection[0]] = tart.Player(selection[0], entry1.get())
+                self.tn.players[selection[0]] = Player(selection[0], entry1.get())
 
                 # Обновляем список игроков в виджете Text
                 players_var.set([f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])
