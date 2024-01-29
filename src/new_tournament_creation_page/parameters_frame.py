@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import filedialog as fd
 import start_page
-import tournament_and_results_table as tournament
+from tournament_and_results_table.tournament import Tournament
 import participant_entry_page
 from tkcalendar import Calendar, DateEntry
 import pandas as pd
@@ -64,7 +64,7 @@ class MyCombobox(ttk.Combobox):
 
 class ParametersFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = tournament.Tournament()):
+    def __init__(self, parent: tk.Tk, tn: Tournament = Tournament()):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
         self.tn = tn
@@ -354,8 +354,8 @@ class ParametersFrame(tk.Frame):
                 self.create_excel_file(data)
             # В противном случае просто изменяем необходимые данные, передавая в аргументе также текущий тур
             else:
-                data_for_current_tour = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
-                ct = data_for_current_tour[data_for_current_tour.columns[1]].tolist()[4]
+                # ct - current tour
+                ct = Tournament.get_current_tour(self.tn.file_path)
                 self.change_excel_file(data, ct)
 
             self.create_participants_page()
@@ -371,10 +371,9 @@ class ParametersFrame(tk.Frame):
         # Если мы вернулись со страницы игроков, то заполняем все ячейки
         if self.tn.file_path != "":
             # Достаём все данные из таблицы
-            tournament_data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
-            tn_name = tournament_data.columns[1]
+            tn_name = Tournament.get_tn_name(self.tn.file_path)
             referee_name, assistant_referee_name, system, count_of_tours, \
-                current_tour, start, end, pr1, pr2, pr3, pr4 = tuple(tournament_data[tournament_data.columns[1]].tolist())
+                current_tour, start, end, pr1, pr2, pr3, pr4 = Tournament.get_all_of_data_without_tn_name(self.tn.file_path)
 
             # Вставляем данные в соответствующие поля
             entry_tn_name.insert(0, tn_name)

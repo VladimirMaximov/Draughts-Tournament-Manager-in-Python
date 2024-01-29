@@ -7,44 +7,70 @@ class Tournament:
     pr1 = ""
     pr2 = ""
 
-    def create_new_tournament(self, directory_path, tn_name):
-        pass
+    @staticmethod
+    def get_tn_name(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data.columns[1]
 
-    def get_tn_name(self):
-        pass
+    @staticmethod
+    def get_referee_name(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[0]
 
-    def get_referee_name(self):
-        pass
+    @staticmethod
+    def get_assistant_referee_name(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[1]
 
-    def get_assistant_referee_name(self):
-        pass
+    @staticmethod
+    def get_system(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[2]
 
-    def get_system(self):
-        pass
+    @staticmethod
+    def get_count_of_tours(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[3]
 
-    def get_count_of_tours(self):
-        pass
+    @staticmethod
+    def get_current_tour(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[4]
 
-    def get_current_tour(self):
-        pass
+    @staticmethod
+    def get_date_of_start(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[5]
 
-    def get_date_of_start(self):
-        pass
+    @staticmethod
+    def get_date_of_end(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[6]
 
-    def get_date_of_end(self):
-        pass
+    @staticmethod
+    def get_priority_1(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[7]
 
-    def get_priority_1(self):
-        pass
+    @staticmethod
+    def get_priority_2(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[8]
 
-    def get_priority_2(self):
-        pass
+    @staticmethod
+    def get_priority_3(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[9]
 
-    def get_priority_3(self):
-        pass
+    @staticmethod
+    def get_priority_4(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tournament_data[tournament_data.columns[1]].tolist()[10]
 
-    def get_priority_4(self):
-        pass
+    @staticmethod
+    def get_all_of_data_without_tn_name(file_path):
+        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+        return tuple(tournament_data[tournament_data.columns[1]].tolist())
 
     def add_player(self, number, name):
         self.players.append(tart.Player(number, name))
