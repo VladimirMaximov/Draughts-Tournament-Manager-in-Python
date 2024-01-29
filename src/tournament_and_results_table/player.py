@@ -1,11 +1,14 @@
 class Player:
 
-    def __init__(self, number, name, list_of_opponents=None, number_of_points=0,
+    def __init__(self, number, name, list_of_opponents: list = None, number_of_points=0,
                  number_of_wins=0, schmullan_coefficient=0, buchholz_coefficient=0,
                  median_solkoff_coefficient=0, truncated_solkoff_coefficient_1=0,
                  truncated_solkoff_coefficient_2=0, place=None):
         self.number = number  # Порядковый номер
         self.name = name
+
+        # Список оппонентов - список вида:
+        # [(opponent_1, color_1, result_1), (opponent_2, color_2, result_2), ...]
         if list_of_opponents is None:
             self.list_of_opponents = []
         else:
@@ -22,6 +25,10 @@ class Player:
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def get_count_of_white_games(self):
+        return self.list_of_opponents[::, 1].count("w")
+
 
     def get_coefficient(self, name_of_coefficient):
         if name_of_coefficient == "Наибольшее число побед":
@@ -50,18 +57,10 @@ class Player:
         if priority == "Результат личной встречи":
             for opponent_from_list in self.list_of_opponents:
                 if opponent_from_list[0] == opponent:
-                    return opponent_from_list[1]
+                    return opponent_from_list[2]
             return 0
-        elif priority == "Наибольшее число побед":
-            return self.number_of_wins
-        elif priority == "Система коэффициентов Шмульяна":
-            self.set_schmullan_coefficient()
-            return self.schmullan_coefficient
-        elif priority == "Система коэффициентов Бухгольца":
-            self.set_buchholz_coefficient()
-            return self.buchholz_coefficient
         else:
-            return 0
+            return self.get_coefficient(priority)
 
     def set_schmullan_coefficient(self):
         winner_points = 0
