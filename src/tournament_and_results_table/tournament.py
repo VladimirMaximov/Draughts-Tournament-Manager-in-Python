@@ -1,5 +1,6 @@
-import tournament_and_results_table as tart
+from tournament_and_results_table import Player
 import pandas as pd
+
 
 class Tournament:
     file_path = ""
@@ -73,7 +74,7 @@ class Tournament:
         return tuple(tournament_data[tournament_data.columns[1]].tolist())
 
     def add_player(self, number, name):
-        self.players.append(tart.Player(number, name))
+        self.players.append(Player(number, name))
 
     def add_players(self, players):
         self.players = players
@@ -105,14 +106,14 @@ class Tournament:
         # В случае нечётного количества игроков добавляем фиктвного участника.
         # Если в прошлом туре добавили нового игрока, то при наличии фиктивного - удаляем его
         delete_plus = False
-        if not len(self.players) % 2 == 0:
+        if len(self.players) % 2 != 0:
             for player in self.players:
                 if player.name == "+":
                     self.players.remove(player)
                     delete_plus = True
                     break
             if not delete_plus:
-                self.players.append(tart.Player(len(self.players), "+"))
+                self.players.append(Player(len(self.players) + 1, "+"))
 
         # В словаре pairs: ключ - игрок, играющий белым цветом, значение - черным
         pairs = {}
@@ -132,32 +133,32 @@ class Tournament:
         # Удаляем лишние, пустые группы
         groups = groups[0:index_of_group + 1]
 
-        for index_of_group in range(index_of_group + 1):
+        for index in range(index_of_group + 1):
             # copig - count_of_players_in_group
-            copig = len(groups[index_of_group])
+            copig = len(groups[index])
 
             for index_of_player in range(copig):
                 # Игроки, которые уже были распределены в пары
                 players_in_pairs = list(pairs.keys()) + list(pairs.values())
 
-                # groups[index_of_group][index_of_player] - текущий игрок
+                # groups[index][index_of_player] - текущий игрок
                 # Если текущего игрока ещё не распределили,
                 # то первым игроком в новой паре становится он,
                 # и далее для первого игрока мы ищем его соперника
-                if players_in_pairs.count(groups[index_of_group][index_of_player]) == 0:
-                    first_player = groups[index_of_group][index_of_player]
+                if players_in_pairs.count(groups[index][index_of_player]) == 0:
+                    first_player: Player = groups[index][index_of_player]
                     # Так как список оппонентов представлен
-                    # как список списков и мы должны получить
+                    # как список кортежей и мы должны получить
                     # только игроков, то необходимо транспонировать
                     # наш список списков и взять первый элемент
                     if len(first_player.list_of_opponents) > 0:
-                        list_of_opponents = list(map(list, zip(*first_player.list_of_opponents)))[0]
+                        list_of_opponents = first_player.list_of_opponents[::, 0]
                     else:
                         list_of_opponents = []
                     second_player = None
                     # Вначале ищем второго игрока среди второй части текущей группы
                     for index_of_second_part_group in range(copig // 2 + copig % 2, copig):
-                        current_player_2 = groups[index_of_group][index_of_second_part_group]
+                        current_player_2 = groups[index][index_of_second_part_group]
                         # Если текущий игрок ещё не находится в паре
                         # и он не играл с уже выбранным первым игроком,
                         # то мы нашли второго игрока
@@ -170,78 +171,76 @@ class Tournament:
                     # его среди первой части текущей группы
                     if second_player is None:
                         for index_of_first_part_group in range(0, copig // 2 + copig % 2):
-                            current_player_2 = groups[index_of_group][index_of_first_part_group]
+                            current_player_2 = groups[index][index_of_first_part_group]
                             if current_player_2 not in players_in_pairs and current_player_2 not in list_of_opponents and current_player_2 != first_player:
                                 second_player = current_player_2
                                 break
                     # Если для первого игрока не нашлось соперника из текущей группы,
                     # то отправляем данного игрока в следующую группу
                     if second_player is None:
-                        if index_of_group + 1 < len(groups):
-                            groups[index_of_group + 1].insert(0, first_player)
+                        if index + 1 < len(groups):
+                            groups[index + 1].insert(0, first_player)
                         # Удалять игрока из текущей группы нет смысла,
                         # так как с ним в любом случае никто не сможет
                         # встать в пару (так как никто не подошел к нему)
                         continue
+
+                    # В противном случае мы нашли соперника.
                     # Если первый игрок играл белым цветом чаще,
                     # чем второй, даём второму белый цвет
-                    if first_player.last_game_color >= second_player.last_game_color:
-                        pairs[second_player] = first_player
-                        first_player.last_game_color -= 1
-                        second_player.last_game_color += 1
-                    else:
+                    if first_player.get_count_of_white_games() >= second_player.get_count_of_white_games():
                         pairs[first_player] = second_player
-                        first_player.last_game_color += 1
-                        second_player.last_game_color -= 1
+                    else:
+                        pairs[second_player] = first_player
 
         if len(pairs) * 2 == len(self.players):
             return pairs
         else:
+            # Список возможных пар имеет вид: [(player_1, player_2), (player_3, player_4), ...]
             list_of_possible_pairs = []
-            visited = [False] * len(groups[-1])
-            result_traversing = []
+
+            # Список игроков с количеством возможных
+            # оппонентов из последней группы вида:
+            # [(player_1, count_of_opponents), (player_2, count_of_opponents), ...]
+            counts_of_possible_opponents = []
+
             # Удаляем из итогового списка пар те пары, которые
             # были составлены из игроков последней группы, а
             # также составляем список всех рёбер
-            # (возможных пар) последней группы
+            # (возможных пар) последней группы и заполняем
+            # counts_of_possible_opponents
             for player in groups[-1]:
+                # Второй параметр None необходим, чтобы не выбрасывалось исключение
                 pairs.pop(player, None)
-                list_of_opponents = list(map(list, zip(*player.list_of_opponents)))[0]
+                list_of_opponents = player.list_of_opponents[::, 0]
+                counts_of_possible_opponents.append((player, 0))
                 for player_2 in groups[-1]:
                     if player_2 not in list_of_opponents \
                             and player_2 != player \
                             and [player, player_2] not in list_of_possible_pairs:
                         list_of_possible_pairs.append((player, player_2))
+                        counts_of_possible_opponents[-1][1] += 1
 
-            # Реализуем алгоритм обхода в глубину
-            def next_vertex(next_player: tart.Player):
-                # Проверяем посещали ли мы вершину
-                if not visited[groups[-1].index(next_player)]:
-                    # Если нет, тогда добавляем вершину в итоговый список
-                    result_traversing.append(next_player)
-                    # Указываем, что мы её посетили
-                    visited[groups[-1].index(next_player)] = True
-                    # Для всех вершин, смежных данной вершине запускаем функцию
-                    for edge in list_of_possible_pairs:
-                        if edge[0] == next_player:
-                            next_vertex(edge[1])
+            # Сортируем игроков по количеству возможных пар в обратном порядке
+            counts_of_possible_opponents.sort(key=lambda x: x[1])
 
-            next_vertex(groups[-1][0])
-            # Составляем из списка result_traversing
-            # пары и добавляем их в итоговый список pairs
-            for i in range(0, len(result_traversing), 2):
-                first_player = result_traversing[i]
-                second_player = result_traversing[i + 1]
+            # Чтобы распределить всех игроков, необходимо вначале распределить тех,
+            # у кого наименьшее количество возможных пар
+            distributed_players = []
 
-                # Если первый игрок играл белым цветом чаще,
-                # чем второй, даём второму белый цвет
-                if first_player.last_game_color >= second_player.last_game_color:
-                    pairs[second_player] = first_player
-                    first_player.last_game_color -= 1
-                    second_player.last_game_color += 1
-                else:
-                    pairs[first_player] = second_player
-                    first_player.last_game_color += 1
-                    second_player.last_game_color -= 1
+            for player, count in counts_of_possible_opponents:
+                for pair in list_of_possible_pairs:
+                    # Если мы нашли пару, где один из игроков - тот,
+                    # которого должны распределить, а также мы не распределяли
+                    # его и пару, то делаем это и добавляем их в
+                    # список распределенных игроков
+                    if (pair[0] == player or pair[1] == player) and distributed_players.count(pair[0]) == 0\
+                            and distributed_players.count(pair[1]) == 0:
+                        if pair[0].get_count_of_white_games() >= pair[1].get_count_of_white_games():
+                            pairs[pair[1]] = pair[0]
+                        else:
+                            pairs[pair[0]] = pair[1]
+                        distributed_players.append(pair[0])
+                        distributed_players.append(pair[1])
 
             return pairs
