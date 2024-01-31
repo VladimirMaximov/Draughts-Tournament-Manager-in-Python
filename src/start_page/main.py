@@ -1,5 +1,5 @@
 import tkinter as tk
-import new_tournament_creation_page
+import new_tournament_creation_page.parameters_frame as parameters_flame
 
 
 class StartFrame(tk.Frame):
@@ -13,7 +13,7 @@ class StartFrame(tk.Frame):
 
     def create_parameters_frame(self):
         [child.destroy() for child in self.parent.winfo_children()]
-        new_tournament_creation_page.ParametersFrame(parent=self.parent)
+        parameters_flame.ParametersFrame(parent=self.parent)
 
     def create_elements(self):
         frame_for_label = tk.Frame(self,

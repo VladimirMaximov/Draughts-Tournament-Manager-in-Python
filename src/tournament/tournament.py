@@ -1,4 +1,4 @@
-from tournament_and_results_table import Player
+import tournament.player as player_module
 import pandas as pd
 
 
@@ -74,7 +74,7 @@ class Tournament:
         return tuple(tournament_data[tournament_data.columns[1]].tolist())
 
     def add_player(self, number, name):
-        self.players.append(Player(number, name))
+        self.players.append(player_module.Player(number, name))
 
     def add_players(self, players):
         self.players = players
@@ -113,7 +113,7 @@ class Tournament:
                     delete_plus = True
                     break
             if not delete_plus:
-                self.players.append(Player(len(self.players) + 1, "+"))
+                self.players.append(player_module.Player(len(self.players) + 1, "+"))
 
         # В словаре pairs: ключ - игрок, играющий белым цветом, значение - черным
         pairs = {}
@@ -146,7 +146,7 @@ class Tournament:
                 # то первым игроком в новой паре становится он,
                 # и далее для первого игрока мы ищем его соперника
                 if players_in_pairs.count(groups[index][index_of_player]) == 0:
-                    first_player: Player = groups[index][index_of_player]
+                    first_player: player_module.Player = groups[index][index_of_player]
                     # Так как список оппонентов представлен
                     # как список кортежей и мы должны получить
                     # только игроков, то необходимо транспонировать

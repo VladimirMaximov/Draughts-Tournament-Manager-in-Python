@@ -1,6 +1,7 @@
 import tkinter as tk
-from new_tournament_creation_page import ParametersFrame
-from tournament_and_results_table import Tournament, Player
+import new_tournament_creation_page.parameters_frame as parameters_frame
+import tournament.tournament as tournament
+import tournament.player as player_module
 from tour_draw_page import ToursFrame
 # from tkinter import messagebox
 import pandas as pd
@@ -8,7 +9,7 @@ import pandas as pd
 
 class ParticipantsFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: Tournament):
+    def __init__(self, parent: tk.Tk, tn: tournament.Tournament):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
         self.tn = tn
@@ -17,7 +18,7 @@ class ParticipantsFrame(tk.Frame):
 
     def create_parameters_frame(self):
         [child.destroy() for child in self.parent.winfo_children()]
-        ParametersFrame(parent=self.parent, tn=self.tn)
+        parameters_frame.ParametersFrame(parent=self.parent, tn=self.tn)
 
     def create_tours_frame(self):
         self.change_excel_file()
@@ -99,7 +100,7 @@ class ParticipantsFrame(tk.Frame):
                 new_player = entry1.get()
 
                 # Добавляем игрока в список игроков
-                self.tn.players.append(Player(len(self.tn.players) + 1, new_player))
+                self.tn.players.append(player_module.Player(len(self.tn.players) + 1, new_player))
 
                 # Обновляем список игроков в виджете Text
                 players_var.set([f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])
@@ -131,7 +132,7 @@ class ParticipantsFrame(tk.Frame):
             # Если выделена хотя бы одна строка
             if len(selection) != 0:
                 # Изменяем первую строку, которая была выделена
-                self.tn.players[selection[0]] = Player(selection[0], entry1.get())
+                self.tn.players[selection[0]] = player_module.Player(selection[0], entry1.get())
 
                 # Обновляем список игроков в виджете Text
                 players_var.set([f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])

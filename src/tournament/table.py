@@ -1,5 +1,5 @@
 import tkinter as tk
-import tournament_and_results_table as tart
+import tournament as tart
 
 
 class TableFrame(tk.Frame):

@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import filedialog as fd
 import start_page
-from tournament_and_results_table.tournament import Tournament
+import tournament.tournament as tournament
 import participant_entry_page
 from tkcalendar import Calendar, DateEntry
 import pandas as pd
@@ -64,7 +64,7 @@ class MyCombobox(ttk.Combobox):
 
 class ParametersFrame(tk.Frame):
 
-    def __init__(self, parent: tk.Tk, tn: Tournament = Tournament()):
+    def __init__(self, parent: tk.Tk, tn: tournament.Tournament = tournament.Tournament()):
         tk.Frame.__init__(self, parent, background="#FFFFFF")
         self.parent = parent
         self.tn = tn
@@ -355,7 +355,7 @@ class ParametersFrame(tk.Frame):
             # В противном случае просто изменяем необходимые данные, передавая в аргументе также текущий тур
             else:
                 # ct - current tour
-                ct = Tournament.get_current_tour(self.tn.file_path)
+                ct = tournament.Tournament.get_current_tour(self.tn.file_path)
                 self.change_excel_file(data, ct)
 
             self.create_participants_page()
@@ -371,9 +371,10 @@ class ParametersFrame(tk.Frame):
         # Если мы вернулись со страницы игроков, то заполняем все ячейки
         if self.tn.file_path != "":
             # Достаём все данные из таблицы
-            tn_name = Tournament.get_tn_name(self.tn.file_path)
+            tn_name = tournament.Tournament.get_tn_name(self.tn.file_path)
             referee_name, assistant_referee_name, system, count_of_tours, \
-                current_tour, start, end, pr1, pr2, pr3, pr4 = Tournament.get_all_of_data_without_tn_name(self.tn.file_path)
+                current_tour, start, end, pr1, pr2, pr3, pr4 = \
+                tournament.Tournament.get_all_of_data_without_tn_name(self.tn.file_path)
 
             # Вставляем данные в соответствующие поля
             entry_tn_name.insert(0, tn_name)
