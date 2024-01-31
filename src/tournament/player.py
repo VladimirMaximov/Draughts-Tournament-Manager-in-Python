@@ -8,7 +8,7 @@ class Player:
         self.name = name
 
         # Список оппонентов - список вида:
-        # [(opponent_1, color_1, result_1), (opponent_2, color_2, result_2), ...]
+        # [[opponent_1, color_1, result_1], [opponent_2, color_2, result_2], ...]
         if list_of_opponents is None:
             self.list_of_opponents = []
         else:
@@ -26,9 +26,14 @@ class Player:
     def __eq__(self, other):
         return self.name == other.name
 
-    def get_count_of_white_games(self):
-        return self.list_of_opponents[::, 1].count("w")
+    def __hash__(self):
+        return hash(self.name)
 
+    def get_count_of_white_games(self):
+        if self.list_of_opponents:
+            return list(list(zip(*self.list_of_opponents))[1]).count("w")
+        else:
+            return 0
 
     def get_coefficient(self, name_of_coefficient):
         if name_of_coefficient == "Наибольшее число побед":
