@@ -331,6 +331,10 @@ class ParametersFrame(tk.Frame):
                                              "храниться файл турнира. Сделайте это, "
                                              "прежде чем переходить на следующую страницу.")
                 return True
+            if not entry_count_of_tours.get().isdigit():
+                messagebox.showerror(title="Некорректное количество туров",
+                                     message="Вы ввели некорректное количество туров, пожалуйста, введите число.")
+                return True
             return False
 
         # При нажатии кнопки далее вызывается функция next_step
