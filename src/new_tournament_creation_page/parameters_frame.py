@@ -335,6 +335,10 @@ class ParametersFrame(tk.Frame):
                 messagebox.showerror(title="Некорректное количество туров",
                                      message="Вы ввели некорректное количество туров, пожалуйста, введите число.")
                 return True
+            if entry_tn_name.get() == "":
+                messagebox.showerror(title="Введите название турнира",
+                                     message="Вы не ввели название турнира, пожалуйста, введите его.")
+                return True
             return False
 
         # При нажатии кнопки далее вызывается функция next_step
