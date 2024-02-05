@@ -339,6 +339,10 @@ class ParametersFrame(tk.Frame):
                 messagebox.showerror(title="Введите название турнира",
                                      message="Вы не ввели название турнира, пожалуйста, введите его.")
                 return True
+            if combobox_system.get() == "":
+                messagebox.showerror(title="Введите систему проведения турнира",
+                                     message="Вы не ввели систему проведения турнира, пожалуйста, сделайте это.")
+                return True
             return False
 
         # При нажатии кнопки далее вызывается функция next_step
