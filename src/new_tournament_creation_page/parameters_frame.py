@@ -343,6 +343,11 @@ class ParametersFrame(tk.Frame):
                 messagebox.showerror(title="Введите систему проведения турнира",
                                      message="Вы не ввели систему проведения турнира, пожалуйста, сделайте это.")
                 return True
+            if combobox_priority_1.get() == "":
+                messagebox.showerror(title="Введите первый приоритет",
+                                     message="Вы не ввели первый приоритет распределения итогового места "
+                                             "при равенстве очков, пожалуйста, сделайте это.")
+                return True
             return False
 
         # При нажатии кнопки далее вызывается функция next_step
