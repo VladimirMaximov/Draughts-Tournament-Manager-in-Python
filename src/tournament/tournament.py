@@ -5,8 +5,7 @@ import pandas as pd
 class Tournament:
     file_path = ""
     players = []
-    pr1 = ""
-    pr2 = ""
+    system = ""
 
     @staticmethod
     def get_tn_name(file_path):
@@ -49,24 +48,8 @@ class Tournament:
         return tournament_data[tournament_data.columns[1]].tolist()[6]
 
     @staticmethod
-    def get_priority_1(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
-        return tournament_data[tournament_data.columns[1]].tolist()[7]
-
-    @staticmethod
-    def get_priority_2(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
-        return tournament_data[tournament_data.columns[1]].tolist()[8]
-
-    @staticmethod
-    def get_priority_3(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
-        return tournament_data[tournament_data.columns[1]].tolist()[9]
-
-    @staticmethod
-    def get_priority_4(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
-        return tournament_data[tournament_data.columns[1]].tolist()[10]
+    def get_name_of_coefficient(name_of_system):
+        return "Название коэффициента"
 
     @staticmethod
     def get_all_of_data_without_tn_name(file_path):
