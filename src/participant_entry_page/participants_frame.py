@@ -31,13 +31,14 @@ class ParticipantsFrame(tk.Frame):
                                      })
         tournament_data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
         count_of_tours = int(tournament_data[tournament_data.columns[1]].tolist()[3])
-        system = self.tn.system
+        pr1 = self.tn.pr1
+        pr2 = self.tn.pr2
 
         main_table_2 = pd.DataFrame({f"Тур {i}": [] for i in range(1, count_of_tours + 1)})
 
         main_table_3 = pd.DataFrame({"Всего очков": [player.number_of_points for player in self.tn.players],
-                                     self.tn.get_name_of_coefficient(self.tn.system):
-                                         [player.get_coefficient(self.tn.system) for player in self.tn.players],
+                                     pr1: [player.get_coefficient(self.tn.pr1) for player in self.tn.players],
+                                     pr2: [player.get_coefficient(self.tn.pr2) for player in self.tn.players],
                                      "Место": [player.place for player in self.tn.players]})
 
         main_table_1 = main_table_1.join(main_table_2).join(main_table_3)
