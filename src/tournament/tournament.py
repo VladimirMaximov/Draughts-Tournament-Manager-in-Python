@@ -3,74 +3,62 @@ import pandas as pd
 
 
 class Tournament:
-    file_path = ""
-    players = []
-    pr1 = ""
-    pr2 = ""
+    def __init__(self, file_path="", players=None):
+        if players is None:
+            players = []
+        self.file_path = file_path
+        self.players = players
 
-    @staticmethod
-    def get_tn_name(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_tn_name(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data.columns[1]
 
-    @staticmethod
-    def get_referee_name(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_referee_name(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[0]
 
-    @staticmethod
-    def get_assistant_referee_name(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_assistant_referee_name(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[1]
 
-    @staticmethod
-    def get_system(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_system(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[2]
 
-    @staticmethod
-    def get_count_of_tours(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_count_of_tours(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[3]
 
-    @staticmethod
-    def get_current_tour(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_current_tour(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[4]
 
-    @staticmethod
-    def get_date_of_start(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_date_of_start(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[5]
 
-    @staticmethod
-    def get_date_of_end(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_date_of_end(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[6]
 
-    @staticmethod
-    def get_priority_1(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_priority_1(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[7]
 
-    @staticmethod
-    def get_priority_2(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_priority_2(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[8]
 
-    @staticmethod
-    def get_priority_3(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_priority_3(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[9]
 
-    @staticmethod
-    def get_priority_4(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_priority_4(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[10]
 
-    @staticmethod
-    def get_all_of_data_without_tn_name(file_path):
-        tournament_data = pd.read_excel(file_path, sheet_name="Турнирные данные")
+    def get_all_of_data_without_tn_name(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tuple(tournament_data[tournament_data.columns[1]].tolist())
 
     def add_player(self, number, name):
