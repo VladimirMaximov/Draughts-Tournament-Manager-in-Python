@@ -84,7 +84,6 @@ class ParametersFrame(tk.Frame):
     def create_path_to_file(path_to_directory, tournament_name, date_start: datetime.date):
         return path_to_directory + "/" + tournament_name + " " + str(date_start) + ".xlsx"
 
-
     def create_excel_file(self, data):
         # data = [name_of_tn, referee_name, assistant_referee_name, system,
         # count_of_tours, date_of_start, date_of_end,
@@ -270,10 +269,14 @@ class ParametersFrame(tk.Frame):
         entry_date_of_end.pack(side="left", padx=5)
 
         # Приоритеты, по которым определяются места
-        priorities = ["Система коэффициентов Бухгольца",
+        priorities = ["Наибольшее число побед",
+                      "Результат личной встречи",
                       "Система коэффициентов Шмульяна",
-                      "Наибольшее число побед",
-                      "Результат личной встречи"]
+                      "Cистема коэффициентов Бухгольца",
+                      "Медианный коэффициент Солкофа",
+                      "Короткий усеченный коэффициент Солкофа",
+                      "Полный усеченный коэффициент Солкофа"
+                      ]
 
         # Фрейм для поля ввода приоритета 1
         frame_for_priority_1 = tk.Frame(frame_for_settings, background="#FFFFFF")
@@ -343,26 +346,6 @@ class ParametersFrame(tk.Frame):
                 messagebox.showerror(title="Введите систему проведения турнира",
                                      message="Вы не ввели систему проведения турнира, пожалуйста, сделайте это.")
                 return True
-            if combobox_priority_1.get() == "":
-                messagebox.showerror(title="Введите первый приоритет",
-                                     message="Вы не ввели первый приоритет распределения итогового места "
-                                             "при равенстве очков, пожалуйста, сделайте это.")
-                return True
-            if combobox_priority_2.get() == "":
-                messagebox.showerror(title="Введите второй приоритет",
-                                     message="Вы не ввели второй приоритет распределения итогового места "
-                                             "при равенстве очков, пожалуйста, сделайте это.")
-                return True
-            if combobox_priority_3.get() == "":
-                messagebox.showerror(title="Введите третий приоритет",
-                                     message="Вы не ввели третий приоритет распределения итогового места "
-                                             "при равенстве очков, пожалуйста, сделайте это.")
-                return True
-            if combobox_priority_4.get() == "":
-                messagebox.showerror(title="Введите четвертый приоритет",
-                                     message="Вы не ввели четвертый приоритет распределения итогового места "
-                                             "при равенстве очков, пожалуйста, сделайте это.")
-                return True
             return False
 
         # При нажатии кнопки далее вызывается функция next_step
@@ -375,10 +358,6 @@ class ParametersFrame(tk.Frame):
                     entry_date_of_end.get_date(), combobox_priority_1.get(), combobox_priority_2.get(),
                     combobox_priority_3.get(), combobox_priority_4.get()]
 
-
-            self.tn.pr1 = combobox_priority_1.get()
-            self.tn.pr2 = combobox_priority_2.get()
-
             # Если объект турнир - пустой, то создаем файл,
             # а также записываем путь к нему в объект турнир
             if self.tn.file_path == "":
@@ -387,7 +366,7 @@ class ParametersFrame(tk.Frame):
             # В противном случае просто изменяем необходимые данные, передавая в аргументе также текущий тур
             else:
                 # ct - current tour
-                ct = tournament.Tournament.get_current_tour(self.tn.file_path)
+                ct = self.tn.get_current_tour()
                 self.change_excel_file(data, ct)
 
             self.create_participants_page()
@@ -403,10 +382,8 @@ class ParametersFrame(tk.Frame):
         # Если мы вернулись со страницы игроков, то заполняем все ячейки
         if self.tn.file_path != "":
             # Достаём все данные из таблицы
-            tn_name = tournament.Tournament.get_tn_name(self.tn.file_path)
-            referee_name, assistant_referee_name, system, count_of_tours, \
-                current_tour, start, end, pr1, pr2, pr3, pr4 = \
-                tournament.Tournament.get_all_of_data_without_tn_name(self.tn.file_path)
+            tn_name, referee_name, assistant_referee_name, system, count_of_tours, \
+            current_tour, start, end, pr1, pr2, pr3, pr4 = self.tn.get_data()
 
             # Вставляем данные в соответствующие поля
             entry_tn_name.insert(0, tn_name)

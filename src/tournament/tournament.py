@@ -57,9 +57,12 @@ class Tournament:
         tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[10]
 
-    def get_all_of_data_without_tn_name(self):
+    def get_data(self):
         tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
-        return tuple(tournament_data[tournament_data.columns[1]].tolist())
+        tn_name = tournament_data.columns[1]
+        data = tournament_data[tournament_data.columns[1]].tolist()
+        data.insert(0, tn_name)
+        return data
 
     def add_player(self, number, name):
         self.players.append(player_module.Player(number, name))
