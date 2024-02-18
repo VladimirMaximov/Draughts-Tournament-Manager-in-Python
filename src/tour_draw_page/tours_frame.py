@@ -193,7 +193,7 @@ class ToursFrame(tk.Frame):
         frame_for_buttons = MyFrame(self.parent, height=100)
         frame_for_buttons.pack(expand=1, fill="both")
 
-        label0 = tk.Label(frame_for_text, text=f"Тур №{Tournament.get_current_tour(self.tn.file_path)}",
+        label0 = tk.Label(frame_for_text, text=f"Тур №{self.tn.get_current_tour()}",
                           font=("Times New Roman", 36),
                           background="#FFFFFF",
                           width=36)
@@ -245,8 +245,8 @@ class ToursFrame(tk.Frame):
                                )
         button_add.grid(row=0, column=2, sticky="W", padx=25, pady=(10, 0))
 
-        text = f"Жеребьевка тура №{self.tn.get_current_tour(self.tn.file_path) + 1}"
-        if self.tn.get_current_tour(self.tn.file_path) == self.tn.get_count_of_tours(self.tn.file_path):
+        text = f"Жеребьевка тура №{self.tn.get_current_tour() + 1}"
+        if self.tn.get_current_tour() == self.tn.get_count_of_tours():
             text = "Итоговая таблица"
 
         button_next = tk.Button(frame_for_buttons, text=text,

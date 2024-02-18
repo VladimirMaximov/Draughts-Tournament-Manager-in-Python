@@ -26,19 +26,24 @@ class ParticipantsFrame(tk.Frame):
         ToursFrame(parent=self.parent, tn=self.tn)
 
     def change_excel_file(self):
-        main_table_1 = pd.DataFrame({"Номер": [i for i in range(1, len(self.tn.players) + 1)],
+        main_table_1 = pd.DataFrame({"Номер": [player.number for player in self.tn.players],
                                      "ФИО": [player.name for player in self.tn.players]
                                      })
-        tournament_data = pd.read_excel(self.tn.file_path, sheet_name="Турнирные данные")
-        count_of_tours = int(tournament_data[tournament_data.columns[1]].tolist()[3])
-        pr1 = self.tn.pr1
-        pr2 = self.tn.pr2
+
+        count_of_tours = int(self.tn.get_count_of_tours())
 
         main_table_2 = pd.DataFrame({f"Тур {i}": [] for i in range(1, count_of_tours + 1)})
 
+        pr1 = self.tn.get_priority_1()
+        pr2 = self.tn.get_priority_2()
+        pr3 = self.tn.get_priority_3()
+        pr4 = self.tn.get_priority_4()
+
         main_table_3 = pd.DataFrame({"Всего очков": [player.number_of_points for player in self.tn.players],
-                                     pr1: [player.get_coefficient(self.tn.pr1) for player in self.tn.players],
-                                     pr2: [player.get_coefficient(self.tn.pr2) for player in self.tn.players],
+                                     pr1: [player.get_coefficient(pr1) for player in self.tn.players],
+                                     pr2: [player.get_coefficient(pr2) for player in self.tn.players],
+                                     pr3: [player.get_coefficient(pr3) for player in self.tn.players],
+                                     pr4: [player.get_coefficient(pr4) for player in self.tn.players],
                                      "Место": [player.place for player in self.tn.players]})
 
         main_table_1 = main_table_1.join(main_table_2).join(main_table_3)
@@ -148,14 +153,11 @@ class ParticipantsFrame(tk.Frame):
                 entry1.delete(0, tk.END)
                 entry1.insert(0, " ".join(set_player.split()[1:]))
 
-        # Переменная поля entry1
-        player = tk.StringVar()
         entry1 = tk.Entry(frame_for_entry,
                           font=("Times New Roman", 14),
                           background="#E8E8E8",
                           relief="flat",
-                          width=81,
-                          textvariable=player
+                          width=81
                           )
         entry1.pack(side="left")
         entry1.bind("<Return>", add_player)

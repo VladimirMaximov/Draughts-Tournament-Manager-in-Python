@@ -99,7 +99,8 @@ class Player:
             return sum(res_of_opponents[1:-1])
 
     def get_short_truncated_solkoff_coefficient(self):
-        return self.get_full_truncated_solkoff_coefficient()[0]
+        coefficient = self.get_full_truncated_solkoff_coefficient()
+        return coefficient[0] if len(coefficient) > 0 else []
 
     def get_full_truncated_solkoff_coefficient(self):
 
