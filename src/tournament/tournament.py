@@ -9,6 +9,75 @@ class Tournament:
         self.file_path = file_path
         self.players = players
 
+    def fill_tour(self):
+
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Основная таблица")
+        count_of_tours = int(self.get_count_of_tours())
+        current_tour = int(self.get_current_tour())
+
+        # Первые 2 столбца таблицы
+        main_table_1 = pd.DataFrame({"Номер": tournament_data[tournament_data.columns[0]].tolist(),
+                                     "ФИО": tournament_data[tournament_data.columns[1]].tolist()
+                                     })
+
+        # Если прошло больше одного тура, то вначале формируем
+        # уже имеющиеся туры, а после добавляем к ним новый тур
+        if current_tour > 1:
+            main_table_2 = pd.DataFrame({tournament_data.columns[i]: tournament_data[tournament_data.columns[i]].tolist()
+                                         for i in range(2, current_tour + 1)})
+            main_table_3 = pd.DataFrame({tournament_data.columns[current_tour + 1]: self.create_last_tour_str_results()})
+            main_table_2.join(main_table_3)
+        else:
+            main_table_2 = pd.DataFrame(
+                {tournament_data.columns[current_tour + 1]: self.create_last_tour_str_results()})
+
+        # Заполняем будущие туры
+        if current_tour < count_of_tours:
+            main_table_3 = pd.DataFrame({f"Тур {i}": [] for i in range(current_tour + 2, count_of_tours + 2)})
+            main_table_2.join(main_table_3)
+
+        pr1 = self.get_priority_1()
+        pr2 = self.get_priority_2()
+        pr3 = self.get_priority_3()
+        pr4 = self.get_priority_4()
+
+        main_table_3 = pd.DataFrame({"Всего очков": [player.number_of_points for player in self.players],
+                                     pr1: [player.get_coefficient(pr1) for player in self.players],
+                                     pr2: [player.get_coefficient(pr2) for player in self.players],
+                                     pr3: [player.get_coefficient(pr3) for player in self.players],
+                                     pr4: [player.get_coefficient(pr4) for player in self.players],
+                                     "Место": [player.place for player in self.players]})
+
+        main_table_1 = main_table_1.join(main_table_2).join(main_table_3)
+
+        writer = pd.ExcelWriter(self.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
+        main_table_1.to_excel(writer, sheet_name="Основная таблица", index=False)
+
+        writer.close()
+
+    def create_last_tour_str_results(self):
+        result_table = []
+
+        # Сортируем игроков в соответствии с их номером
+        self.players.sort(key=lambda x: x.number)
+
+        for player in self.players:
+            opponent, color, result = player.list_of_opponents[-1]
+            result_table.append(str(opponent.number) + color + str(result))
+
+        return result_table
+
+    def prize_distribution(self):
+
+        # Сортируем в порядке количества очков
+        # и величины коэффициентов
+        self.sort_players()
+
+        for i, player in enumerate(self.players):
+            player.place = i + 1
+
+        self.players.sort(key=lambda x: x.number)
+
     def get_tn_name(self):
         tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data.columns[1]
@@ -32,6 +101,26 @@ class Tournament:
     def get_current_tour(self):
         tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
         return tournament_data[tournament_data.columns[1]].tolist()[4]
+
+    def set_current_tour(self, ct):
+        data = self.get_data()
+        tournament_data = pd.DataFrame({"Название турнира:": [data[0]],
+                                        "ФИО судьи:": [data[1]],
+                                        "ФИО помощника судьи:": [data[2]],
+                                        "Система проведения соревнований:": [data[3]],
+                                        "Количество туров:": [data[4]],
+                                        "Номер текущего тура": ct,
+                                        "Дата начала соревнований:": [data[6]],
+                                        "Дата окончания соревнований:": [data[7]],
+                                        "Приоритет 1 при равенстве очков:": [data[8]],
+                                        "Приоритет 2 при равенстве очков:": [data[9]],
+                                        "Приоритет 3 при равенстве очков:": [data[10]],
+                                        "Приоритет 4 при равенстве очков:": [data[11]]}).T
+
+        writer = pd.ExcelWriter(self.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
+        tournament_data.to_excel(writer, sheet_name="Турнирные данные", index=True, header=False)
+
+        writer.close()
 
     def get_date_of_start(self):
         tournament_data = pd.read_excel(self.file_path, sheet_name="Турнирные данные")
@@ -123,6 +212,9 @@ class Tournament:
 
         # Удаляем лишние, пустые группы
         groups = groups[0:index_of_group + 1]
+
+        # Пересортировываем игроков в порядке их номеров
+        self.players.sort(key=lambda x: x.number)
 
         for index in range(index_of_group + 1):
             # copig - count_of_players_in_group
@@ -225,7 +317,7 @@ class Tournament:
                     # которого должны распределить, а также мы не распределяли
                     # его и пару, то делаем это и добавляем их в
                     # список распределенных игроков
-                    if (pair[0] == player or pair[1] == player) and distributed_players.count(pair[0]) == 0\
+                    if (pair[0] == player or pair[1] == player) and distributed_players.count(pair[0]) == 0 \
                             and distributed_players.count(pair[1]) == 0:
                         if pair[0].get_count_of_white_games() >= pair[1].get_count_of_white_games():
                             pairs[pair[1]] = pair[0]

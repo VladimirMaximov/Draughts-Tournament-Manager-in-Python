@@ -3,14 +3,16 @@ from tkinter import messagebox as mb
 import copy
 
 from tournament.tournament import Tournament
+from tournament.table import TableFrame
 import new_tournament_creation_page
 import participant_entry_page.participants_frame as participants_frame
 import pandas as pd
 
 
 class MyFrame(tk.Frame):
-    def __init__(self, frame,  height, width=1000, *args, **kwargs):
+    def __init__(self, frame, height, width=1000, *args, **kwargs):
         tk.Frame.__init__(self, frame, background="#FFFFFF", height=height, width=width, *args, **kwargs)
+
 
 class ToursFrame(tk.Frame):
 
@@ -22,7 +24,7 @@ class ToursFrame(tk.Frame):
         self.pack(expand=1)
 
     def create_prev_frame(self):
-        if Tournament.get_current_tour(self.tn.file_path) == 1:
+        if self.tn.get_current_tour() == 1:
             [child.destroy() for child in self.parent.winfo_children()]
             participants_frame.ParticipantsFrame(parent=self.parent, tn=self.tn)
         else:
@@ -35,48 +37,49 @@ class ToursFrame(tk.Frame):
         for white_player, white_player_result, black_player_result, black_player in results:
             if white_player_result.get().isdigit() and black_player_result.get().isdigit():
                 if int(white_player_result.get()) + int(black_player_result.get()) != 2:
-                    mb.showerror(title="Ошибка",
-                                 message=f"Проверьте результаты, возможные исходы партии:\n 2 : 0, 1 : 1, 0 : 2")
-                    return True
+                    mb.showwarning(title="Предупреждение",
+                                   message=f"Проверьте результаты, возможно вы ввели некорректный исход партии. "
+                                           f"Вернитесь на страницу назад и перепроверьте. "
+                                           f"Возможные исходы:\n 2 : 0, 1 : 1, 0 : 2")
             else:
                 mb.showerror(title="Ошибка",
-                             message="Проверьте результаты, возможные исходы партии:\n 2 : 0, 1 : 1, 0 : 2")
+                             message="Проверьте результаты, в полях ввода должны быть целые числа. "
+                                     "Возможные исходы:\n 2 : 0, 1 : 1, 0 : 2")
                 return True
         return False
 
-    # def next_tour(self, results):
-    #     # Проверяем результат на ошибки
-    #     if self.check_errors(results):
-    #         return
-    #
-    #     for white_player, white_player_result, black_player_result, black_player in results:
-    #
-    #         # Так как мы можем много раз вызывать итоговую таблицу,
-    #         # то обновления информации об игроках может выполняться
-    #         # несколько раз, поэтому требуется делать проверку
-    #         if white_player.list_of_opponents.count((black_player, int(white_player_result.get()))) == 0:
-    #             white_player.number_of_points += int(white_player_result.get())
-    #             black_player.number_of_points += int(black_player_result.get())
-    #             if int(white_player_result.get()) == 2:
-    #                 white_player.number_of_wins += 1
-    #             if int(black_player_result.get()) == 2:
-    #                 black_player.number_of_wins += 1
-    #
-    #             white_player.list_of_opponents.append((black_player, int(white_player_result.get()), "w"))
-    #             black_player.list_of_opponents.append((white_player, int(black_player_result.get()), "b"))
-    #
-    #     # Если это был последний тур, то вместо
-    #     # жеребьевки следующего тура выдаем таблицу
-    #     self.tn.current_tour += 1
-    #     if self.tn.current_tour > self.tn.count_of_tours:
-    #         self.tn.current_tour -= 1
-    #         window = tk.Tk()
-    #         tart.TableFrame(window, self.tn)
-    #         window.mainloop()
-    #         return
-    #
-    #     [child.destroy() for child in self.parent.winfo_children()]
-    #     ToursFrame(self.parent, self.tn)
+    def next_tour(self, results):
+        # Проверяем результат на ошибки
+        if self.check_errors(results):
+            return
+
+        for white_player, white_player_result, black_player_result, black_player in results:
+
+            # Так как мы можем много раз вызывать итоговую таблицу,
+            # то обновления информации об игроках может выполняться
+            # несколько раз, поэтому требуется делать проверку
+            if white_player.list_of_opponents.count((black_player, int(white_player_result.get()))) == 0:
+                white_player.number_of_points += int(white_player_result.get())
+                black_player.number_of_points += int(black_player_result.get())
+
+                white_player.list_of_opponents.append((black_player, "w", int(white_player_result.get())))
+                black_player.list_of_opponents.append((white_player, "b", int(black_player_result.get())))
+
+                # Распределяем места
+                self.tn.prize_distribution()
+
+                self.tn.fill_tour()
+
+        # Если это был последний тур, то вместо
+        # жеребьевки следующего тура выдаем таблицу
+        if self.tn.get_current_tour() >= self.tn.get_count_of_tours():
+            window = tk.Tk()
+            TableFrame(window, self.tn)
+            window.mainloop()
+            return
+
+        [child.destroy() for child in self.parent.winfo_children()]
+        ToursFrame(self.parent, self.tn)
 
     def change_settings(self):
         window1 = tk.Tk()
@@ -255,6 +258,7 @@ class ToursFrame(tk.Frame):
                                 width=20,
                                 height=2,
                                 relief="solid",
-                                activebackground="#FFFFFF"
+                                activebackground="#FFFFFF",
+                                command=lambda: self.next_tour(results)
                                 )
         button_next.grid(row=0, column=3, sticky="W", padx=(20, 10), pady=(10, 0))
