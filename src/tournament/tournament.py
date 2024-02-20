@@ -62,6 +62,7 @@ class Tournament:
         self.players.sort(key=lambda x: x.number)
 
         for player in self.players:
+            print(player.list_of_opponents[-1])
             opponent, color, result = player.list_of_opponents[-1]
             result_table.append(str(opponent.number) + color + str(result))
 

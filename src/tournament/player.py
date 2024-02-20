@@ -61,7 +61,7 @@ class Player:
 
     def get_count_of_wins(self):
         res = 0
-        for opponent, result, color in self.list_of_opponents:
+        for opponent, color, result in self.list_of_opponents:
             if result == 2:
                 res += 1
         return res
@@ -70,7 +70,7 @@ class Player:
         winner_points = 0
         loser_points = 0
 
-        for opponent, result, color in self.list_of_opponents:
+        for opponent, color, result in self.list_of_opponents:
             if result == 2:
                 winner_points += opponent.number_of_points
             if result == 0:
@@ -81,14 +81,14 @@ class Player:
     def get_buchholz_coefficient(self):
         res = 0
 
-        for opponent, result, color in self.list_of_opponents:
+        for opponent, color, result in self.list_of_opponents:
             res += opponent.number_of_points
 
         return res
 
     def get_median_solkoff_coefficient(self):
         res_of_opponents = []
-        for opponent, result, color in self.list_of_opponents:
+        for opponent, color, result in self.list_of_opponents:
             res_of_opponents.append(opponent.number_of_points)
 
         res_of_opponents.sort()
@@ -105,7 +105,7 @@ class Player:
     def get_full_truncated_solkoff_coefficient(self):
 
         res_of_opponents = []
-        for opponent, result, color in self.list_of_opponents:
+        for opponent, color, result in self.list_of_opponents:
             res_of_opponents.append(opponent.number_of_points)
 
         res_of_opponents.sort()
