@@ -20,6 +20,9 @@ class Player:
     def __hash__(self):
         return hash(self.name)
 
+    def __str__(self):
+        return str(self.number) + ". " + self.name + " список оппонентов: " + str(self.list_of_opponents)
+
     def get_count_of_white_games(self):
         if self.list_of_opponents:
             return list(list(zip(*self.list_of_opponents))[1]).count("w")

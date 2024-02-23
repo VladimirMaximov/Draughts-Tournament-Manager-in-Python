@@ -26,15 +26,15 @@ class Tournament:
             main_table_2 = pd.DataFrame({tournament_data.columns[i]: tournament_data[tournament_data.columns[i]].tolist()
                                          for i in range(2, current_tour + 1)})
             main_table_3 = pd.DataFrame({tournament_data.columns[current_tour + 1]: self.create_last_tour_str_results()})
-            main_table_2.join(main_table_3)
+            main_table_2 = main_table_2.join(main_table_3)
         else:
             main_table_2 = pd.DataFrame(
                 {tournament_data.columns[current_tour + 1]: self.create_last_tour_str_results()})
 
         # Заполняем будущие туры
         if current_tour < count_of_tours:
-            main_table_3 = pd.DataFrame({f"Тур {i}": [] for i in range(current_tour + 2, count_of_tours + 2)})
-            main_table_2.join(main_table_3)
+            main_table_3 = pd.DataFrame({f"Тур {i}": [] for i in range(current_tour + 1, count_of_tours + 1)})
+            main_table_2 = main_table_2.join(main_table_3)
 
         pr1 = self.get_priority_1()
         pr2 = self.get_priority_2()
@@ -62,7 +62,6 @@ class Tournament:
         self.players.sort(key=lambda x: x.number)
 
         for player in self.players:
-            print(player.list_of_opponents[-1])
             opponent, color, result = player.list_of_opponents[-1]
             result_table.append(str(opponent.number) + color + str(result))
 

@@ -53,26 +53,27 @@ class ToursFrame(tk.Frame):
         if self.check_errors(results):
             return
 
+        print(results)
         for white_player, white_player_result, black_player_result, black_player in results:
 
             # Так как мы можем много раз вызывать итоговую таблицу,
             # то обновления информации об игроках может выполняться
             # несколько раз, поэтому требуется делать проверку
-            if white_player.list_of_opponents.count((black_player, int(white_player_result.get()))) == 0:
-                white_player.number_of_points += int(white_player_result.get())
-                black_player.number_of_points += int(black_player_result.get())
 
-                white_player.list_of_opponents.append((black_player, "w", int(white_player_result.get())))
-                black_player.list_of_opponents.append((white_player, "b", int(black_player_result.get())))
+            white_player.number_of_points += int(white_player_result.get())
+            black_player.number_of_points += int(black_player_result.get())
 
-                # Распределяем места
-                self.tn.prize_distribution()
+            white_player.list_of_opponents.append((black_player, "w", int(white_player_result.get())))
+            black_player.list_of_opponents.append((white_player, "b", int(black_player_result.get())))
 
-                self.tn.fill_tour()
+        # Распределяем места
+        self.tn.prize_distribution()
+
+        self.tn.fill_tour()
 
         # Если это был последний тур, то вместо
         # жеребьевки следующего тура выдаем таблицу
-        if self.tn.get_current_tour() >= self.tn.get_count_of_tours():
+        if int(self.tn.get_current_tour()) >= int(self.tn.get_count_of_tours()):
             window = tk.Tk()
             TableFrame(window, self.tn)
             window.mainloop()
