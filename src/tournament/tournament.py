@@ -235,7 +235,7 @@ class Tournament:
                     # только игроков, то необходимо транспонировать
                     # наш список списков и взять первый элемент
                     if len(first_player.list_of_opponents) > 0:
-                        list_of_opponents = first_player.list_of_opponents[::, 0]
+                        list_of_opponents = [i[0] for i in first_player.list_of_opponents]
                     else:
                         list_of_opponents = []
                     second_player = None
@@ -295,7 +295,7 @@ class Tournament:
             for player in groups[-1]:
                 # Второй параметр None необходим, чтобы не выбрасывалось исключение
                 pairs.pop(player, None)
-                list_of_opponents = player.list_of_opponents[::, 0]
+                list_of_opponents = [i[0] for i in player.list_of_opponents]
                 counts_of_possible_opponents.append((player, 0))
                 for player_2 in groups[-1]:
                     if player_2 not in list_of_opponents \

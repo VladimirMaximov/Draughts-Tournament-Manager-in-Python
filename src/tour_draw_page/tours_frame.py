@@ -53,7 +53,6 @@ class ToursFrame(tk.Frame):
         if self.check_errors(results):
             return
 
-        print(results)
         for white_player, white_player_result, black_player_result, black_player in results:
 
             # Так как мы можем много раз вызывать итоговую таблицу,
@@ -74,13 +73,12 @@ class ToursFrame(tk.Frame):
         # Если это был последний тур, то вместо
         # жеребьевки следующего тура выдаем таблицу
         if int(self.tn.get_current_tour()) >= int(self.tn.get_count_of_tours()):
-            window = tk.Tk()
-            TableFrame(window, self.tn)
-            window.mainloop()
-            return
-
-        [child.destroy() for child in self.parent.winfo_children()]
-        ToursFrame(self.parent, self.tn)
+            [child.destroy() for child in self.parent.winfo_children()]
+            TableFrame(self.parent, self.tn)
+        else:
+            self.tn.set_current_tour(self.tn.get_current_tour() + 1)
+            [child.destroy() for child in self.parent.winfo_children()]
+            ToursFrame(self.parent, self.tn)
 
     def change_settings(self):
         window1 = tk.Tk()
