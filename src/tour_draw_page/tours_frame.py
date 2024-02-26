@@ -80,11 +80,11 @@ class ToursFrame(tk.Frame):
             [child.destroy() for child in self.parent.winfo_children()]
             ToursFrame(self.parent, self.tn)
 
-    def change_settings(self):
-        window1 = tk.Tk()
-        tn = copy.deepcopy(self.tn)
-        new_tournament_creation_page.ParametersFrame(parent=window1, tn=tn)
-        window1.mainloop()
+    # def change_settings(self):
+    #     window1 = tk.Tk()
+    #     tn = copy.deepcopy(self.tn)
+    #     new_tournament_creation_page.ParametersFrame(parent=window1, tn=tn)
+    #     window1.mainloop()
 
     # width=950, height=400
     def create_pairs(self, canvas: tk.Canvas):
