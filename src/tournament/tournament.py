@@ -276,9 +276,7 @@ class Tournament:
                     else:
                         pairs[second_player] = first_player
 
-        if len(pairs) * 2 == len(self.players):
-            return pairs
-        else:
+        while len(pairs) * 2 != len(self.players):
             # Список возможных пар имеет вид: [(player_1, player_2), (player_3, player_4), ...]
             list_of_possible_pairs = []
 
@@ -304,6 +302,12 @@ class Tournament:
                         list_of_possible_pairs.append((player, player_2))
                         counts_of_possible_opponents[-1][1] += 1
 
+            # Также расформировываем последнюю группу, так как в случае,
+            # если мы не сможем распределить пары, придется
+            # расформировывать уже 2 группы и так далее
+            groups[-2] = groups[-2].join(groups[-1])
+            groups.pop(-1)
+
             # Сортируем игроков по количеству возможных пар в обратном порядке
             counts_of_possible_opponents.sort(key=lambda x: x[1])
 
@@ -326,4 +330,4 @@ class Tournament:
                         distributed_players.append(pair[0])
                         distributed_players.append(pair[1])
 
-            return pairs
+        return pairs
