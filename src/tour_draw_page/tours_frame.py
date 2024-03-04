@@ -232,7 +232,7 @@ class ToursFrame(tk.Frame):
                                   height=2,
                                   relief="solid",
                                   activebackground="#FFFFFF",
-                                  command=self.change_settings
+                                  #command=self.change_settings
                                   )
         button_delete.grid(row=0, column=1, sticky="W", padx=25, pady=(10, 0))
 
