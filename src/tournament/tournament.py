@@ -282,7 +282,7 @@ class Tournament:
 
             # Список игроков с количеством возможных
             # оппонентов из последней группы вида:
-            # [(player_1, count_of_opponents), (player_2, count_of_opponents), ...]
+            # [[player_1, count_of_opponents], [player_2, count_of_opponents], ...]
             counts_of_possible_opponents = []
 
             # Удаляем из итогового списка пар те пары, которые
@@ -294,7 +294,7 @@ class Tournament:
                 # Второй параметр None необходим, чтобы не выбрасывалось исключение
                 pairs.pop(player, None)
                 list_of_opponents = [i[0] for i in player.list_of_opponents]
-                counts_of_possible_opponents.append((player, 0))
+                counts_of_possible_opponents.append([player, 0])
                 for player_2 in groups[-1]:
                     if player_2 not in list_of_opponents \
                             and player_2 != player \
@@ -305,7 +305,7 @@ class Tournament:
             # Также расформировываем последнюю группу, так как в случае,
             # если мы не сможем распределить пары, придется
             # расформировывать уже 2 группы и так далее
-            groups[-2] = groups[-2].join(groups[-1])
+            groups[-2] = groups[-2] + groups[-1]
             groups.pop(-1)
 
             # Сортируем игроков по количеству возможных пар в обратном порядке
