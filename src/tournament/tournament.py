@@ -9,6 +9,11 @@ class Tournament:
         self.file_path = file_path
         self.players = players
 
+    def fill_tours_sheet(self):
+        tournament_data = pd.read_excel(self.file_path, sheet_name="Туры")
+        current_tour = int(self.get_current_tour())
+
+
     def fill_tour(self):
 
         tournament_data = pd.read_excel(self.file_path, sheet_name="Основная таблица")
