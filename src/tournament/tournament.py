@@ -10,9 +10,61 @@ class Tournament:
         self.players = players
 
     def fill_tours_sheet(self):
-        tournament_data = pd.read_excel(self.file_path, sheet_name="Туры")
+        td = pd.read_excel(self.file_path, sheet_name="Туры")
         current_tour = int(self.get_current_tour())
 
+        prev_data = []
+        if current_tour > 1:
+            prev_data = pd.DataFrame({td.columns[i]: td[td.columns[i]].tolist() for i in range(current_tour * 4)})
+
+            results = list(zip(*self.create_results_for_tours_table()))
+            new_data = pd.DataFrame({"Игрок белым цветом:": results[0],
+                                     f"Тур {current_tour + 1}": results[1],
+                                     "Игрок черным цветом:": results[2]
+                                     })
+
+            prev_data = prev_data.join(new_data)
+        else:
+            results = list(zip(*self.create_results_for_tours_table()))
+            new_data = pd.DataFrame({"Игрок белым цветом:": results[0],
+                                     f"Тур {1}": results[1],
+                                     "Игрок черным цветом:": results[2]
+                                     })
+
+            prev_data = new_data
+
+        writer = pd.ExcelWriter(self.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
+        prev_data.to_excel(writer, sheet_name="Туры", index=False)
+
+        writer.close()
+
+
+    def create_results_for_tours_table(self):
+        result_table = []
+
+        def create_pair_result(res, col):
+            if (res == 2 and col == "w") or (res == 0 and col == "b"):
+                return "2 -- 0"
+            elif res == 1:
+                return "1 -- 1"
+            else:
+                return "0 -- 2"
+
+        # Сортируем игроков в соответствии с количеством очков
+        self.players.sort(key=lambda x: x.number_of_points, reverse=True)
+
+        added = []
+        for player in self.players:
+            opponent, color, result = player.list_of_opponents[-1]
+
+            if player not in added:
+                if color == "w":
+                    result_table.append((player.name, create_pair_result(result, color), opponent.name))
+                else:
+                    result_table.append((opponent.name, create_pair_result(result, color), player.name))
+
+            added.append(opponent)
+        return result_table
 
     def fill_tour(self):
 

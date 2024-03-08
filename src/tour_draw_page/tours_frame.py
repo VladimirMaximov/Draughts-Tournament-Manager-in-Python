@@ -69,6 +69,7 @@ class ToursFrame(tk.Frame):
         self.tn.prize_distribution()
 
         self.tn.fill_tour()
+        self.tn.fill_tours_sheet()
 
         # Если это был последний тур, то вместо
         # жеребьевки следующего тура выдаем таблицу
