@@ -235,3 +235,16 @@ class ParticipantsFrame(tk.Frame):
                                 command=self.create_tours_frame
                                 )
         button_next.pack(side="left", padx=5, pady=10)
+
+        # Задаем тестовые значения
+        def test_values(event=None):
+            for i in range(1, 9):
+                new_player = f"{i}"
+
+                # Добавляем игрока в список игроков
+                self.tn.players.append(player_module.Player(len(self.tn.players) + 1, new_player))
+
+                # Обновляем список игроков в виджете Text
+                players_var.set([f" {i + 1}. " + self.tn.players[i].name for i in range(len(self.tn.players))])
+
+        self.parent.bind("<Insert>", test_values)
