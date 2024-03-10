@@ -414,3 +414,27 @@ class ParametersFrame(tk.Frame):
             combobox_priority_2.set(pr2)
             combobox_priority_3.set(pr3)
             combobox_priority_4.set(pr4)
+
+        # Задаем тестовые значения
+        def test_values(event=None):
+            entry_tn_name.insert(0, "Тестовый турнир")
+            button_select_path.configure(text="C:\\Users\\user\\Desktop")
+
+            # Также заполняем переменную path, так как в функции
+            # проверки check_input_data мы проверяем содержимое данной переменной
+            nonlocal path
+            path = "C:\\Users\\user\\Desktop"
+
+            entry_referee_name.insert(0, "Имя главного судьи")
+            entry_assistant_referee_name.insert(0, "Имя помощника судьи")
+            combobox_system.set("Швейцарская система")
+            entry_count_of_tours.insert(0, "7")
+
+            combobox_priority_1.set("Медианный коэффициент Солкофа")
+            combobox_priority_2.set("Cистема коэффициентов Бухгольца")
+            combobox_priority_3.set("Система коэффициентов Шмульяна")
+            combobox_priority_4.set("Наибольшее число побед")
+
+        self.parent.bind("<Insert>", test_values)
+
+
