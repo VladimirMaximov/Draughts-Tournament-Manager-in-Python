@@ -15,22 +15,24 @@ class Tournament:
 
         prev_data = []
         if current_tour > 1:
-            prev_data = pd.DataFrame({td.columns[i]: td[td.columns[i]].tolist() for i in range(current_tour * 4)})
+            prev_data = pd.DataFrame({td.columns[i]: td[td.columns[i]].tolist() for i in range((current_tour - 1) * 4 - 1)})
 
             results = list(zip(*self.create_results_for_tours_table()))
-            new_data = pd.DataFrame({"Игрок белым цветом:": results[0],
-                                     f"Тур {current_tour + 1}": results[1],
-                                     "Игрок черным цветом:": results[2]
+            new_data = pd.DataFrame({f"Игрок белым цветом {current_tour} тура:": results[0],
+                                     f"Тур {current_tour}": results[1],
+                                     f"Игрок черным цветом {current_tour} тура:": results[2]
                                      })
 
+            prev_data = prev_data.join(pd.DataFrame({f"--{current_tour-1}--{current_tour}--": []}))
             prev_data = prev_data.join(new_data)
         else:
             results = list(zip(*self.create_results_for_tours_table()))
-            new_data = pd.DataFrame({"Игрок белым цветом:": results[0],
+            new_data = pd.DataFrame({f"Игрок белым цветом {1} тура:": results[0],
                                      f"Тур {1}": results[1],
-                                     "Игрок черным цветом:": results[2]
+                                     f"Игрок черным цветом {1} тура:": results[2]
                                      })
 
+            new_data = new_data.join(pd.DataFrame({f"--{current_tour}--{current_tour + 1}--": []}))
             prev_data = new_data
 
         writer = pd.ExcelWriter(self.file_path, engine="openpyxl", mode="a", if_sheet_exists='replace')
